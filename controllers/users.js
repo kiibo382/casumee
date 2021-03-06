@@ -1,116 +1,58 @@
-'use strict';
+const modelsUsers = require('../models/users');
+const crypto = require('crypto');
+const randomBytes = crypto.randomBytes();
+const createHmac = crypto.createHmac();
 
-/**
- * Module dependencies.
- */
+exports.insert = (req, res) => {
+    let salt = randomBytes(16).toString('base64');
+    let hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
+    req.body.password = salt + "$" + hash;
+    req.body.permissionLevel = 1;
+    modelsUsers.createUser(req.body)
+        .then((result) => {
+            res.status(201).send({id: result._id});
+        });
+}
 
-const mongoose = require('mongoose');
-const { wrap: async } = require('co');
-const User = mongoose.model('User');
+exports.list = (req, res) => {
+    let limit = req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
+    let page = 0;
+    if (req.query) {
+        if (req.query.page) {
+            req.query.page = parseInt(req.query.page);
+            page = Number.isInteger(req.query.page) ? req.query.page : 0;
+        }
+    }
+    modelsUsers.list(limit, page)
+        .then((result) => {
+            res.status(200).send(result);
+        })
+}
 
-/**
- * Load
- */
+exports.getById = (req, res) => {
+    modelsUsers.findById(req.params.userId)
+        .then((result) => {
+            res.status(200).send(result);
+        });
+}
 
-exports.load = async(function*(req, res, next, _id) {
-  const criteria = { _id };
-  try {
-    req.profile = yield User.load({ criteria });
-    if (!req.profile) return next(new Error('User not found'));
-  } catch (err) {
-    return next(err);
-  }
-  next();
-});
+exports.patchById = (req, res) => {
+    if (req.body.password) {
+        let salt = randomBytes(16).toString('base64');
+        let hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
+        req.body.password = salt + "$" + hash;
+    }
 
-/**
- * Create user
- */
+    modelsUsers.patchUser(req.params.userId, req.body)
+        .then((result) => {
+            res.status(204).send({});
+        });
 
-exports.create = async(function*(req, res) {
-  const user = new User(req.body);
-  user.provider = 'local';
-  try {
-    yield user.save();
-    req.logIn(user, err => {
-      if (err) req.flash('info', 'Sorry! We are not able to log you in!');
-      res.redirect('/');
-    });
-  } catch (err) {
-    const errors = Object.keys(err.errors).map(
-      field => err.errors[field].message
-    );
+}
 
-    res.render('users/signup', {
-      title: 'Sign up',
-      errors,
-      user
-    });
-  }
-});
-
-/**
- *  Show profile
- */
-
-exports.show = function(req, res) {
-  const user = req.profile;
-  res.render('users/show', {
-    title: user.name,
-    user: user
-  });
-};
-
-exports.signin = function() {};
-
-/**
- * Auth callback
- */
-
-exports.authCallback = login;
-
-/**
- * Show login form
- */
-
-exports.login = function(req, res) {
-  res.render('users/login', {
-    title: 'Login'
-  });
-};
-
-/**
- * Show sign up form
- */
-
-exports.signup = function(req, res) {
-  res.render('users/signup', {
-    title: 'Sign up',
-    user: new User()
-  });
-};
-
-/**
- * Logout
- */
-
-exports.logout = function(req, res) {
-  req.logout();
-  res.redirect('/login');
-};
-
-/**
- * Session
- */
-
-exports.session = login;
-
-/**
- * Login
- */
-
-function login(req, res) {
-  const redirectTo = req.session.returnTo ? req.session.returnTo : '/';
-  delete req.session.returnTo;
-  res.redirect(redirectTo);
+exports.removeById = (req, res) => {
+    modelsUsers.removeById(req.params.userId)
+        .then((result)=>{
+            res.status(204).send({});
+        });
 }

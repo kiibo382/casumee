@@ -1,20 +1,44 @@
-var express = require('express');
-var router = express.Router();
+const usersController = require('../controllers/users');
+const authPermission = require('../middlewares/auth.permission');
+const authValidation = require('../middlewares/auth.permission');
+const envConfig = require('../config/env.config');
+const permissionLevels = envConfig['permissionLevels'];
 
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const ADMIN = permissionLevels.ADMIN;
+const PAID = permissionLevels.PAID_USER;
+const FREE = permissionLevels.NORMAL_USER;
 
-router.post('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const express = require('express');
+const router = express.Router();
 
-router.put('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.post('/users', [
+    usersController.insert
+]);
 
-router.put('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.get('/users', [
+    authValidation.validJWTNeeded,
+    authPermission.minimumPermissionLevelRequired(PAID),
+    usersController.list
+]);
+
+router.get('/users/:userId', [
+    authValidation.validJWTNeeded,
+    authPermission.minimumPermissionLevelRequired(FREE),
+    authPermission.onlySameUserOrAdminCanDoThisAction,
+    usersController.getById
+]);
+
+router.patch('/users/:userId', [
+    authValidation.validJWTNeeded,
+    authPermission.minimumPermissionLevelRequired(FREE),
+    authPermission.onlySameUserOrAdminCanDoThisAction,
+    usersController.patchById
+]);
+
+router.delete('/users/:userId', [
+    authValidation.validJWTNeeded,
+    authPermission.minimumPermissionLevelRequired(ADMIN),
+    usersController.removeById
+]);
 
 module.exports = router;
