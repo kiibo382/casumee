@@ -23,6 +23,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+io.on("connection", (socket)=>{
+  console.log("ユーザーが接続しました");
+  
+  socket.on("post", (msg)=>{
+    io.emit("member-post", msg);
+  });
+});
+
 app.use(function(req, res, next) {
   next(createError(404));
 });
@@ -36,14 +44,3 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
-
-
-io.on("connection", (socket)=>{
-  console.log("ユーザーが接続しました");
-
-  socket.on("post", (msg)=>{
-    io.emit("member-post", msg);
-  });
-});
-
-app.listen(3000)
