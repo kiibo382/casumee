@@ -1,23 +1,80 @@
-const mongoose = require('../config/mongoose');
+import validator from 'validator';
+import mongoose from '../config/mongoose.js';
 const Schema = mongoose.Schema;
 
+const carrerSchema = new Schema({
+    groupName: {
+        type: String,
+        required: true
+    },
+    firstDate: {
+        type: Date,
+        required: true
+    },
+    lastDate: Date,
+    occupation: String,
+    contents: String
+});
+
+const educationalBackgroudSchema = new Schema({
+    schoolName: {
+        type: String,
+        required: true
+    },
+    firstDate: {
+        type: Date,
+        required: true
+    },
+    lastDate: Date,
+    faculty: String,
+    department: String,
+    major: String,
+    achivement: String
+});
+
 const userSchema = new Schema({
+    userName: {
+        type: String,
+        required: true
+    },
     firstName: {
-        type: String
+        type: String,
+        required: true
     },
     lastName: {
-        type: String
+        type: String,
+        required: true
     },
     email: {
-        type: String
+        type: String,
+        unique: true,
+        required: true,
+        validate: {
+            validator: (v) => validator.isEmail(v),
+            message: props => `${props.value} is invalid email address`
+        },
+    },
+    groupEmail: {
+        type: String,
+        unique: true,
+        validate: {
+            validator: (v) => validator.isEmail(v),
+            message: props => `${props.value} is invalid email address`
+        },
     },
     password: {
-        type: String
+        type: String,
+        required: true
     },
     permissionLevel: {
-        type: Number
+        type: Number,
+        default: 1
     },
-    
+    profile: String,
+    age: Number,
+    occupation: String,
+    carrer: [carrerSchema],
+    educationalBackgroud: [educationalBackgroudSchema]
 });
 
 userSchema.virtual('id').get(function () {
@@ -30,17 +87,17 @@ userSchema.set('toJSON', {
 });
 
 userSchema.findById = function (cb) {
-    return this.model('Users').find({id: this.id}, cb);
+    return this.model('Users').find({ id: this.id }, cb);
 };
 
 const User = mongoose.model('Users', userSchema);
 
 
-exports.findByEmail = (email) => {
-    return User.find({email: email});
+export function findByEmail(email) {
+    return User.find({ email: email });
 }
 
-exports.findById = (id) => {
+export function findById(id) {
     return User.findById(id)
         .then((result) => {
             result = result.toJSON();
@@ -50,12 +107,12 @@ exports.findById = (id) => {
         });
 }
 
-exports.createUser = (userData) => {
+export function createUser(userData) {
     const user = new User(userData);
     return user.save();
 }
 
-exports.list = (perPage, page) => {
+export function list(perPage, page) {
     return new Promise((resolve, reject) => {
         User.find()
             .limit(perPage)
@@ -70,15 +127,15 @@ exports.list = (perPage, page) => {
     });
 }
 
-exports.patchUser = (id, userData) => {
+export function putUser(id, userData) {
     return User.findOneAndUpdate({
         _id: id
     }, userData);
 }
 
-exports.removeById = (userId) => {
+export function removeUser(userId) {
     return new Promise((resolve, reject) => {
-        User.deleteMany({_id: userId}, (err) => {
+        User.deleteMany({ _id: userId }, (err) => {
             if (err) {
                 reject(err);
             } else {

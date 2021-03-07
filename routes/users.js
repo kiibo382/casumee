@@ -1,42 +1,42 @@
-const usersController = require('../controllers/users');
-const authPermission = require('../middlewares/users/permission');
-const authValidation = require('../middlewares/users/validation');
-const envConfig = require('../config/env.config');
+import { insert, getList, getById, putById, removeById } from '../controllers/users.js';
+import { minimumPermissionLevelRequired, onlySameUserOrAdminCanDoThisAction } from '../middlewares/users/permission.js';
+import { validJWTNeeded } from '../middlewares/users/validation.js';
+import envConfig from '../config/env.config.js';
 const permissionLevels = envConfig['permissionLevels'];
 
 const ADMIN = permissionLevels.ADMIN;
 const PAID = permissionLevels.PAID_USER;
 const FREE = permissionLevels.NORMAL_USER;
 
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-router.post('/', usersController.insert);
+router.post('/', insert);
 
 router.get('/', [
-    authValidation.validJWTNeeded,
-    authPermission.minimumPermissionLevelRequired(PAID),
-    usersController.list
+    validJWTNeeded,
+    minimumPermissionLevelRequired(PAID),
+    getList
 ]);
 
 router.get('/:userId', [
-    authValidation.validJWTNeeded,
-    authPermission.minimumPermissionLevelRequired(FREE),
-    authPermission.onlySameUserOrAdminCanDoThisAction,
-    usersController.getById
+    validJWTNeeded,
+    minimumPermissionLevelRequired(FREE),
+    onlySameUserOrAdminCanDoThisAction,
+    getById
 ]);
 
-router.patch('/:userId', [
-    authValidation.validJWTNeeded,
-    authPermission.minimumPermissionLevelRequired(FREE),
-    authPermission.onlySameUserOrAdminCanDoThisAction,
-    usersController.patchById
+router.put('/:userId', [
+    validJWTNeeded,
+    minimumPermissionLevelRequired(FREE),
+    onlySameUserOrAdminCanDoThisAction,
+    putById
 ]);
 
 router.delete('/:userId', [
-    authValidation.validJWTNeeded,
-    authPermission.minimumPermissionLevelRequired(ADMIN),
-    usersController.removeById
+    validJWTNeeded,
+    minimumPermissionLevelRequired(ADMIN),
+    removeById
 ]);
 
-module.exports = router;
+export default router;

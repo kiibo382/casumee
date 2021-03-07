@@ -1,22 +1,21 @@
-const VerifyUserMiddleware = require('../middlewares/auth/verify');
-const AuthorizationController = require('../controllers/auth');
-const AuthValidationMiddleware = require('../middlewares/users/validation');
+import { hasAuthValidFields, isPasswordAndUserMatch } from '../middlewares/auth/verify.js';
+import { login } from '../controllers/auth.js';
+import { validJWTNeeded, verifyRefreshBodyField, validRefreshNeeded } from '../middlewares/users/validation.js';
 
-const express = require('express');
-const { route } = require('.');
+import express from 'express';
 const router = express.Router();
 
 router.post('/', [
-    VerifyUserMiddleware.hasAuthValidFields,
-    VerifyUserMiddleware.isPasswordAndUserMatch,
-    AuthorizationController.login
+    hasAuthValidFields,
+    isPasswordAndUserMatch,
+    login
 ]);
 
 router.post('/refresh', [
-    AuthValidationMiddleware.validJWTNeeded,
-    AuthValidationMiddleware.verifyRefreshBodyField,
-    AuthValidationMiddleware.validRefreshNeeded,
-    AuthorizationController.login
+    validJWTNeeded,
+    verifyRefreshBodyField,
+    validRefreshNeeded,
+    login
 ]);
 
-module.exports = router
+export default router
