@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "DEBUG=express:* node ./bin/www"
+    "start-dev": "DEBUG=express:* nodemon ./bin/server.js",
+    "start-stg": "node ./bin/server.js",
+    "start-prd": "forever ./bin/server.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

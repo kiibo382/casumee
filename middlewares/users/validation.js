@@ -1,6 +1,7 @@
-import jsonwebtoken from 'jsonwebtoken';
-const verify = jsonwebtoken.verify()
-const secret = require('../../config/env.config.js').default['jwt_secret'];
+import jwt from 'jsonwebtoken';
+const verify = jwt.verify()
+import envConfig from '../../config/env.config.js'
+const secret = envConfig.jwt_secret
 import crypto from 'crypto';
 const createHmac = crypto.createHmac()
 
