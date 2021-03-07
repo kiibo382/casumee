@@ -1,3 +1,7 @@
 .vscode/
 .env
 node_modules
+/backup
+/config/env.config.js
+/data
+/log

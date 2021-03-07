@@ -19,11 +19,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: rootpass
+      TZ: Asia/Tokyo
     ports:
       - 27017:27017
     volumes:
-      - ./data:/data/db
-
+      - ./data:/data
   mongo-express:
     image: mongo-express
     restart: always
