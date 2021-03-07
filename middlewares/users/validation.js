@@ -31,7 +31,8 @@ exports.validJWTNeeded = (req, res, next) => {
             if (authorization[0] !== 'Bearer') {
                 return res.status(401).send();
             } else {
-                req.jwt = verify(authorization[1], secret);
+                req.jwt = jwt.verify(authorization[1], secret);
+                console.log(req.jwt)
                 return next();
             }
 

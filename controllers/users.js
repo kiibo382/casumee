@@ -36,14 +36,14 @@ exports.getById = (req, res) => {
         });
 }
 
-exports.patchById = (req, res) => {
+exports.putById = (req, res) => {
     if (req.body.password) {
         let salt = randomBytes(16).toString('base64');
         let hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
         req.body.password = salt + "$" + hash;
     }
 
-    modelsUsers.patchUser(req.params.userId, req.body)
+    modelsUsers.putUser(req.params.userId, req.body)
         .then((result) => {
             res.status(204).send({});
         });
@@ -51,6 +51,7 @@ exports.patchById = (req, res) => {
 }
 
 exports.removeById = (req, res) => {
+    console.log(req.params.userId)
     modelsUsers.removeById(req.params.userId)
         .then((result)=>{
             res.status(204).send({});

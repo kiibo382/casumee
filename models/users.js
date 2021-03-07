@@ -1,3 +1,4 @@
+const validator = require('validator')
 const mongoose = require('../config/mongoose');
 const Schema = mongoose.Schema;
 
@@ -9,10 +10,17 @@ const userSchema = new Schema({
         type: String
     },
     email: {
-        type: String
+        type: String,
+        unique: true,
+        required: true,
+        validate: { 
+            validator: (v) => validator.isEmail(v), 
+            message: props => `${props.value} is invalid email address`
+        },
     },
     password: {
-        type: String
+        type: String,
+        required: true
     },
     permissionLevel: {
         type: Number
@@ -70,7 +78,7 @@ exports.list = (perPage, page) => {
     });
 }
 
-exports.patchUser = (id, userData) => {
+exports.putUser = (id, userData) => {
     return User.findOneAndUpdate({
         _id: id
     }, userData);

@@ -26,11 +26,11 @@ router.get('/:userId', [
     usersController.getById
 ]);
 
-router.patch('/:userId', [
+router.put('/:userId', [
     authValidation.validJWTNeeded,
     authPermission.minimumPermissionLevelRequired(FREE),
     authPermission.onlySameUserOrAdminCanDoThisAction,
-    usersController.patchById
+    usersController.putById
 ]);
 
 router.delete('/:userId', [
