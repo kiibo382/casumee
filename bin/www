@@ -1,29 +1,15 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+const app = require('../app');
+const debug = require('debug')('socketio-chat:server');
+const http = require('http');
 
-var app = require('../app');
-var debug = require('debug')('socketio-chat:server');
-var http = require('http');
 
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.SERVER_PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+const server = http.createServer(app);
 
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
 
 server.listen(port);
 server.on('error', onError);
@@ -37,7 +23,6 @@ function normalizePort(val) {
   var port = parseInt(val, 10);
 
   if (isNaN(port)) {
-    // named pipe
     return val;
   }
 

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
 let count = 0;
 
@@ -14,7 +14,6 @@ const options = {
 
 const connectWithRetry = () => {
     console.log('MongoDB connection with retry')
-    console.log(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`)
     mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`, options)
         .then(() => {
             console.log('MongoDB is connected')
@@ -26,4 +25,4 @@ const connectWithRetry = () => {
 
 connectWithRetry();
 
-module.exports = mongoose
+export default mongoose

@@ -1,9 +1,10 @@
-const jwt = require('jsonwebtoken');
-const secret = require('../../config/env.config.js')['jwt_secret'];
-const crypto = require('crypto');
+import jsonwebtoken from 'jsonwebtoken';
+const verify = jsonwebtoken.verify()
+const secret = require('../../config/env.config.js').default['jwt_secret'];
+import crypto from 'crypto';
+const createHmac = crypto.createHmac()
 
-
-exports.verifyRefreshBodyField = (req, res, next) => {
+export function verifyRefreshBodyField(req, res, next) {
     if (req.body && req.body.refresh_token) {
         return next();
     } else {
@@ -11,10 +12,10 @@ exports.verifyRefreshBodyField = (req, res, next) => {
     }
 }
 
-exports.validRefreshNeeded = (req, res, next) => {
+export function validRefreshNeeded(req, res, next) {
     let b = Buffer.from(req.body.refresh_token, 'base64');
     let refresh_token = b.toString();
-    let hash = crypto.createHmac('sha512', req.jwt.refreshKey).update(req.jwt.userId + secret).digest("base64");
+    let hash = createHmac('sha512', req.jwt.refreshKey).update(req.jwt.userId + secret).digest("base64");
     if (hash === refresh_token) {
         req.body = req.jwt;
         return next();
@@ -23,19 +24,11 @@ exports.validRefreshNeeded = (req, res, next) => {
     }
 }
 
-
-exports.validJWTNeeded = (req, res, next) => {
+export function validJWTNeeded(req, res, next) {
     if (req.headers['authorization']) {
         try {
-            let authorization = req.headers['authorization'].split(' ');
-            if (authorization[0] !== 'Bearer') {
-                return res.status(401).send();
-            } else {
-                req.jwt = jwt.verify(authorization[1], secret);
-                console.log(req.jwt)
-                return next();
-            }
-
+            req.jwt = verify(req.headers['authorization'], secret);
+            return next();
         } catch (err) {
             return res.status(403).send();
         }

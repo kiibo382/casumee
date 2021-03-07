@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken';
 const secret = require('../../config/env.config')['jwt_secret'];
 
 const ADMIN_PERMISSION = 4096;
 
-exports.minimumPermissionLevelRequired = (required_permission_level) => {
+export function minimumPermissionLevelRequired(required_permission_level) {
     return (req, res, next) => {
         console.log(req.jwt.permissionLevel)
         console.log(required_permission_level)
@@ -16,7 +16,7 @@ exports.minimumPermissionLevelRequired = (required_permission_level) => {
     };
 }
 
-exports.onlySameUserOrAdminCanDoThisAction = (req, res, next) => {
+export function onlySameUserOrAdminCanDoThisAction(req, res, next) {
 
     let user_permission_level = parseInt(req.jwt.permissionLevel);
     let userId = req.jwt.userId;
@@ -32,7 +32,7 @@ exports.onlySameUserOrAdminCanDoThisAction = (req, res, next) => {
 
 }
 
-exports.sameUserCantDoThisAction = (req, res, next) => {
+export function sameUserCantDoThisAction(req, res, next) {
     let userId = req.jwt.userId;
 
     if (req.params.userId !== userId) {
