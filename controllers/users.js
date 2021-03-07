@@ -1,7 +1,7 @@
 const modelsUsers = require('../models/users');
 const crypto = require('crypto');
-const randomBytes = crypto.randomBytes();
-const createHmac = crypto.createHmac();
+const randomBytes = crypto.randomBytes;
+const createHmac = crypto.createHmac;
 
 exports.insert = (req, res) => {
     let salt = randomBytes(16).toString('base64');

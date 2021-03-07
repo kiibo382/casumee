@@ -1,6 +1,6 @@
 const usersController = require('../controllers/users');
-const authPermission = require('../middlewares/auth.permission');
-const authValidation = require('../middlewares/auth.permission');
+const authPermission = require('../middlewares/users/permission');
+const authValidation = require('../middlewares/users/validation');
 const envConfig = require('../config/env.config');
 const permissionLevels = envConfig['permissionLevels'];
 
@@ -11,31 +11,29 @@ const FREE = permissionLevels.NORMAL_USER;
 const express = require('express');
 const router = express.Router();
 
-router.post('/users', [
-    usersController.insert
-]);
+router.post('/', usersController.insert);
 
-router.get('/users', [
+router.get('/', [
     authValidation.validJWTNeeded,
     authPermission.minimumPermissionLevelRequired(PAID),
     usersController.list
 ]);
 
-router.get('/users/:userId', [
+router.get('/:userId', [
     authValidation.validJWTNeeded,
     authPermission.minimumPermissionLevelRequired(FREE),
     authPermission.onlySameUserOrAdminCanDoThisAction,
     usersController.getById
 ]);
 
-router.patch('/users/:userId', [
+router.patch('/:userId', [
     authValidation.validJWTNeeded,
     authPermission.minimumPermissionLevelRequired(FREE),
     authPermission.onlySameUserOrAdminCanDoThisAction,
     usersController.patchById
 ]);
 
-router.delete('/users/:userId', [
+router.delete('/:userId', [
     authValidation.validJWTNeeded,
     authPermission.minimumPermissionLevelRequired(ADMIN),
     usersController.removeById
