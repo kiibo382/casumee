@@ -4,8 +4,8 @@ const randomBytes = crypto.randomBytes;
 const createHmac = crypto.createHmac;
 
 export function insert(req, res) {
-    let salt = randomBytes(16).toString('base64');
-    let hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
+    const salt = randomBytes(16).toString('base64');
+    const hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
     req.body.password = salt + "$" + hash;
     req.body.permissionLevel = 1;
     createUser(req.body)
@@ -15,8 +15,8 @@ export function insert(req, res) {
 }
 
 export function getList(req, res) {
-    let limit = req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
-    let page = 0;
+    const limit = req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
+    const page = 0;
     if (req.query) {
         if (req.query.page) {
             req.query.page = parseInt(req.query.page);
@@ -38,8 +38,8 @@ export function getById(req, res) {
 
 export function putById(req, res) {
     if (req.body.password) {
-        let salt = randomBytes(16).toString('base64');
-        let hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
+        const salt = randomBytes(16).toString('base64');
+        const hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
         req.body.password = salt + "$" + hash;
     }
 

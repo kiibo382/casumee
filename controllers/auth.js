@@ -1,16 +1,17 @@
-const jwtSecret = require('../config/env.config')['jwt_secret']
+import envConfig from '../../config/env.config.js'
+const jwtSecret = envConfig.jwt_secret
 import jsonwebtoken from 'jsonwebtoken';
 import crypto from 'crypto';
 
 export function login(req, res) {
     try {
-        let refreshId = req.body.userId + jwtSecret;
-        let salt = crypto.randomBytes(16).toString('base64');
-        let hash = crypto.createHmac('sha512', salt).update(refreshId).digest("base64");
+        const refreshId = req.body.userId + jwtSecret;
+        const salt = crypto.randomBytes(16).toString('base64');
+        const hash = crypto.createHmac('sha512', salt).update(refreshId).digest("base64");
         req.body.refreshKey = salt;
-        let token = jsonwebtoken.sign(req.body, jwtSecret);
-        let b = Buffer.from(hash);
-        let refresh_token = b.toString('base64');
+        const token = jsonwebtoken.sign(req.body, jwtSecret);
+        const b = Buffer.from(hash);
+        const refresh_token = b.toString('base64');
         res.status(201).send({accessToken: token, refreshToken: refresh_token});
     } catch (err) {
         res.status(500).send({errors: err});
@@ -20,7 +21,7 @@ export function login(req, res) {
 export function refresh_token(req, res) {
     try {
         req.body = req.jwt;
-        let token = jsonwebtoken.sign(req.body, jwtSecret);
+        const token = jsonwebtoken.sign(req.body, jwtSecret);
         res.status(201).send({id: token});
     } catch (err) {
         res.status(500).send({errors: err});

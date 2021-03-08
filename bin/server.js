@@ -1,5 +1,5 @@
 import app from '../app.js';
-const debug = require('debug')('casemee:server');
+const debug = require('debug')('casumee:server');
 import http from 'http';
 
 
