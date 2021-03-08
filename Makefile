@@ -1,10 +1,10 @@
 
 .PHONY: dev-init
-init:
+dev-init:
 	npm install
 
 .PHONY: prd-init
-init:
+prd-init:
 	npm install --production
 
 .PHONY: build-local
