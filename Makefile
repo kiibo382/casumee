@@ -9,7 +9,7 @@ prd-init:
 
 .PHONY: build-local
 build-local:
-	docker-compose build 
+	docker-compose -f docker-compose.local.yml build 
 
 .PHONY: run-local-db
 run-local-db:
