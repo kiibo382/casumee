@@ -7,7 +7,7 @@ export function minimumPermissionLevelRequired(required_permission_level) {
     return (req, res, next) => {
         console.log(req.jwt.permissionLevel)
         console.log(required_permission_level)
-        let user_permission_level = parseInt(req.jwt.permissionLevel);
+        const user_permission_level = parseInt(req.jwt.permissionLevel);
         if (user_permission_level & required_permission_level) {
             return next();
         } else {
@@ -18,8 +18,8 @@ export function minimumPermissionLevelRequired(required_permission_level) {
 
 export function onlySameUserOrAdminCanDoThisAction(req, res, next) {
 
-    let user_permission_level = parseInt(req.jwt.permissionLevel);
-    let userId = req.jwt.userId;
+    const user_permission_level = parseInt(req.jwt.permissionLevel);
+    const userId = req.jwt.userId;
     if (req.params && req.params.userId && userId === req.params.userId) {
         return next();
     } else {
@@ -33,7 +33,7 @@ export function onlySameUserOrAdminCanDoThisAction(req, res, next) {
 }
 
 export function sameUserCantDoThisAction(req, res, next) {
-    let userId = req.jwt.userId;
+    const userId = req.jwt.userId;
 
     if (req.params.userId !== userId) {
         return next();

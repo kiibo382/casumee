@@ -2,7 +2,7 @@ import { findByEmail } from '../../models/users.js';
 import crypto from 'crypto';
 
 export function hasAuthValidFields(req, res, next) {
-    let errors = [];
+    const errors = [];
 
     if (req.body) {
         if (!req.body.email) {
