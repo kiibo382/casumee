@@ -27,8 +27,13 @@ export function validRefreshNeeded(req, res, next) {
 export function validJWTNeeded(req, res, next) {
     if (req.headers['authorization']) {
         try {
-            req.jwt = jwt.verify(req.headers['authorization'], secret);
-            return next();
+            const authorization = req.headers['authorization'].split(' ');
+            if (authorization[0] !== 'Bearer') {
+                return res.status(401).send();
+            } else {
+                req.jwt = jwt.verify(authorization[1], secret);
+                return next();
+            }
         } catch (err) {
             return res.status(403).send();
         }
