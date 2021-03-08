@@ -1,10 +1,8 @@
-// import jwt from 'jsonwebtoken';
 import { findByEmail } from '../../models/users.js';
 import crypto from 'crypto';
-const createHmac = crypto.createHmac()
 
 export function hasAuthValidFields(req, res, next) {
-    let errors = [];
+    const errors = [];
 
     if (req.body) {
         if (!req.body.email) {
@@ -15,24 +13,24 @@ export function hasAuthValidFields(req, res, next) {
         }
 
         if (errors.length) {
-            return res.status(400).send({errors: errors.join(',')});
+            return res.status(400).send({ errors: errors.join(',') });
         } else {
             return next();
         }
     } else {
-        return res.status(400).send({errors: 'Missing email and password fields'});
+        return res.status(400).send({ errors: 'Missing email and password fields' });
     }
 }
 
 export function isPasswordAndUserMatch(req, res, next) {
     findByEmail(req.body.email)
-        .then((user)=>{
-            if(!user[0]){
+        .then((user) => {
+            if (!user[0]) {
                 res.status(404).send({});
-            }else{
-                let passwordFields = user[0].password.split('$');
-                let salt = passwordFields[0];
-                let hash = createHmac('sha512', salt).update(req.body.password).digest("base64");
+            } else {
+                const passwordFields = user[0].password.split('$');
+                const salt = passwordFields[0];
+                const hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64");
                 if (hash === passwordFields[1]) {
                     req.body = {
                         userId: user[0]._id,
@@ -43,7 +41,7 @@ export function isPasswordAndUserMatch(req, res, next) {
                     };
                     return next();
                 } else {
-                    return res.status(400).send({errors: ['Invalid e-mail or password']});
+                    return res.status(400).send({ errors: ['Invalid e-mail or password'] });
                 }
             }
         });

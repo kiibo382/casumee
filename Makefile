@@ -1,15 +1,15 @@
 
 .PHONY: dev-init
-init:
+dev-init:
 	npm install
 
 .PHONY: prd-init
-init:
+prd-init:
 	npm install --production
 
 .PHONY: build-local
 build-local:
-	docker-compose build 
+	docker-compose -f docker-compose.local.yml build 
 
 .PHONY: run-local-db
 run-local-db:
