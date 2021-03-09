@@ -2,10 +2,12 @@
   "name": "casumee-server",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "start-dev": "DEBUG=express:* nodemon ./bin/server.js",
     "start-stg": "node ./bin/server.js",
-    "start-prd": "forever ./bin/server.js"
+    "start-prd": "forever ./bin/server.js",
+    "format": "prettier --write './**/*.js'"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -25,5 +27,7 @@
     "uuid": "^8.3.2",
     "validator": "^13.5.2"
   },
-  "type": "module"
+  "devDependencies": {
+    "prettier": "^2.2.1"
+  }
 }
