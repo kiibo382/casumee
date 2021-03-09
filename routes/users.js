@@ -2,7 +2,7 @@ import { insert, getList, getById, putById, removeById } from '../controllers/us
 import { minimumPermissionLevelRequired, onlySameUserOrAdminCanDoThisAction } from '../middlewares/users/permission.js';
 import { validJWTNeeded } from '../middlewares/users/validation.js';
 import envConfig from '../config/env.config.js';
-const permissionLevels = envConfig['permissionLevels'];
+const permissionLevels = envConfig.permissionLevels;
 
 const ADMIN = permissionLevels.ADMIN;
 const PAID = permissionLevels.PAID_USER;

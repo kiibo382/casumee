@@ -1,6 +1,6 @@
 // import jwt from 'jsonwebtoken';
 import envConfig from '../../config/env.config.js'
-const secret = envConfig['jwt_secret']
+const secret = envConfig.jwt_secret
 const ADMIN_PERMISSION = 4096;
 
 export function minimumPermissionLevelRequired(required_permission_level) {

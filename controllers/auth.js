@@ -1,4 +1,4 @@
-import envConfig from '../../config/env.config.js'
+import envConfig from '../config/env.config.js'
 const jwtSecret = envConfig.jwt_secret
 import jsonwebtoken from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -22,7 +22,7 @@ export function refresh_token(req, res) {
     try {
         req.body = req.jwt;
         const token = jsonwebtoken.sign(req.body, jwtSecret);
-        res.status(201).send({id: token});
+        res.status(201).send({ id: token });
     } catch (err) {
         res.status(500).send({ errors: err });
     }
