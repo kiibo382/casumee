@@ -1,9 +1,9 @@
 import envConfig from "../config/env.config.js";
-const jwtSecret = envConfig.jwt_secret;
+const secret = envConfig.jwt_secret;
 import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
 
-export function login(req, res) {
+export function returnToken(req, res) {
   try {
     const refreshId = req.body.userId + secret;
     const salt = crypto.randomBytes(16).toString("base64");
@@ -24,7 +24,7 @@ export function login(req, res) {
 export function refresh_token(req, res) {
   try {
     req.body = req.jwt;
-    const token = jsonwebtoken.sign(req.body, jwtSecret);
+    const token = jsonwebtoken.sign(req.body, secret);
     res.status(201).send({ id: token });
   } catch (err) {
     res.status(500).send({ errors: err });

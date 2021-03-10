@@ -1,10 +1,16 @@
 import {
   insert,
   getList,
+  login,
+  logout,
   getById,
   putById,
   removeById,
 } from "../controllers/users.js";
+import {
+  hasAuthValidFields,
+  isPasswordAndUserMatch,
+} from "../middlewares/auth/verify.js";
 import {
   minimumPermissionLevelRequired,
   onlySameUserOrAdminCanDoThisAction,
@@ -26,6 +32,19 @@ router.get("/", [
   validJWTNeeded,
   minimumPermissionLevelRequired(PAID),
   getList,
+]);
+
+router.post("/login", [
+  hasAuthValidFields,
+  isPasswordAndUserMatch,
+  login
+]);
+
+router.post("/:userId/logout", [
+  validJWTNeeded,
+  minimumPermissionLevelRequired(FREE),
+  onlySameUserOrAdminCanDoThisAction,
+  logout
 ]);
 
 router.get("/:userId", [
