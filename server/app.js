@@ -61,13 +61,13 @@ app.use(session(sess))
 //   })
 // );
 
-// app.set("views", path.join(import.meta.url, "../client/views"));
-// app.set("view engine", "ejs");
+app.set("views", path.join(import.meta.url, "../client/views"));
+app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(express.static(path.join(import.meta.url, "../client/public")));
+app.use(express.static(path.join(import.meta.url, "../client/public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
