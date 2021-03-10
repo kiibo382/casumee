@@ -3,14 +3,49 @@ import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import redis from 'redis';
+import session from 'express-session';
+import connectRedis from 'connect-redis';
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
 
+const RedisStore = connectRedis(session);
+const redisClient = redis.createClient();
+
 const app = express();
 // const http = require("http").createServer(app);
 // const io   = require("socket.io")(http);
+
+app.use(cookieParser())
+app.use(session({
+  secret: 'secret_key',
+  resave: false,
+  saveUninitialized: false,
+  store: new RedisStore({ client: redisClient }),
+  cookie: { httpOnly: true, secure: false, maxage: 1000 * 60 * 30 }
+}))
+
+// app.use(
+//   session({
+//     name: 'セッションID名',
+//     store: new RedisStore({
+//       client: redisClient,
+//       disableTouch: true,
+//     }),
+//     cookie: {
+//       maxAge: 1000 * 60 * 60 * 24 * 365,
+//       httpOnly: true,
+//       secure: __prod__,
+//       sameSite: 'lax',
+//     },
+//     saveUninitialized: false,
+//     secret: '任意の文字列',
+//     resave: false,
+//   }),
+// );
+
 
 app.set("views", path.join(import.meta.url, "../client/views"));
 app.set("view engine", "ejs");

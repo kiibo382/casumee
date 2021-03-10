@@ -1,5 +1,8 @@
+#!/usr/bin/env node
+
 import app from "../app.js";
-import debug from "debug";
+import d from "debug";
+const debug = d('casumee-server:app')
 import http from "http";
 
 const port = normalizePort(process.env.SERVER_PORT || "3000");
