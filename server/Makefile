@@ -15,8 +15,8 @@ build-local:
 run-local-db:
 	docker-compose -f docker-compose.local.yml up
 
-.PHONY: run-local-dev-server
-run-local-dev-server:
+.PHONY: run-local-server
+run-local-server:
 	npm run start-dev
 
 .PHONY: cleanup
