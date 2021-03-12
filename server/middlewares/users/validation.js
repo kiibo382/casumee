@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import envConfig from "../../config/env.config.js";
 const secret = envConfig.jwt_secret;
 import crypto from "crypto";
-import pkg from 'morgan';
+import pkg from "morgan";
 const { token } = pkg;
 
 export function verifyRefreshBodyField(req, res, next) {
@@ -30,9 +30,9 @@ export function validRefreshNeeded(req, res, next) {
 
 export function validJWTNeeded(req, res, next) {
   if (req.session.token) {
-    var bearerToken = req.session.token
+    var bearerToken = req.session.token;
   } else if (req.headers["authorization"]) {
-    var bearerToken = req.headers["authorization"]
+    var bearerToken = req.headers["authorization"];
   } else {
     return res.status(401).send();
   }

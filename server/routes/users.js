@@ -3,9 +3,9 @@ import {
   getList,
   login,
   logout,
-  getById,
-  putById,
-  removeById,
+  getByUserName,
+  putByUserName,
+  removeByUserName,
 } from "../controllers/users.js";
 import {
   hasAuthValidFields,
@@ -30,41 +30,45 @@ router.post("/", insert);
 
 router.get("/", [
   validJWTNeeded,
-  minimumPermissionLevelRequired(PAID),
+  minimumPermissionLevelRequired(FREE),
   getList,
 ]);
 
-router.post("/login", [
-  hasAuthValidFields,
-  isPasswordAndUserMatch,
-  login
-]);
+router.post("/login", [hasAuthValidFields, isPasswordAndUserMatch, login]);
 
-router.post("/:userId/logout", [
+router.post("/logout", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
   onlySameUserOrAdminCanDoThisAction,
-  logout
+  logout,
 ]);
 
-router.get("/:userId", [
+router.get("/self", [
+  validJWTNeeded,
+  minimumPermissionLevelRequired(FREE),
+  onlySameUserOrAdminCanDoThisAction
+  // getSelf,
+]);
+
+router.put("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
   onlySameUserOrAdminCanDoThisAction,
-  getById,
+  putByUserName,
 ]);
 
-router.put("/:userId", [
+router.delete("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
   onlySameUserOrAdminCanDoThisAction,
-  putById,
+  removeByUserName,
 ]);
 
-router.delete("/:userId", [
+router.get("/:userName", [
   validJWTNeeded,
-  minimumPermissionLevelRequired(ADMIN),
-  removeById,
+  minimumPermissionLevelRequired(FREE),
+  onlySameUserOrAdminCanDoThisAction,
+  getByUserName,
 ]);
 
 export default router;

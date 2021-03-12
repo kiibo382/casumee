@@ -53,40 +53,9 @@ paths:
         "400":
           description: Bad Request.
 
-  /auth:
-    post:
-      tags:
-        - auth
-      summary: authorize the request user and return token
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                password:
-                  type: string
-      responses:
-        "201":
-          description: CREATED
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-                  refreshToken:
-                    type: string
-        "400":
-          description: Invalid e-mail or password.
-
-  /users/{user_id}:
+  /users/{userName}:
     parameters:
-      - name: user_id
+      - name: userName
         in: path
         description: user id
         required: true
@@ -147,6 +116,37 @@ paths:
         "403":
           description: Not Authenticated.
 
+  /auth:
+    post:
+      tags:
+        - auth
+      summary: authorize the request user and return token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "201":
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  refreshToken:
+                    type: string
+        "400":
+          description: Invalid e-mail or password.
+
 components:
   schemas:
     Users:
@@ -158,16 +158,16 @@ components:
       properties:
         id:
           type: string
-        user_name:
+        userName:
           type: string
-        first_name:
+        firstname:
           type: string
-        last_name:
+        lastName:
           type: string
         email:
           type: string
           format: email
-        group_email:
+        groupEmail:
           type: string
           format: email
         password:
@@ -182,19 +182,19 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Career"
-        educational_background:
+        educationalBackground:
           type: array
           items:
             $ref: "#/components/schemas/EducationalBackground"
     Career:
       type: object
       properties:
-        group_name:
+        groupName:
           type: string
-        first_date:
+        firstDate:
           type: string
           format: date
-        last_date:
+        lastDate:
           type: string
           format: date
         occupation:
@@ -204,12 +204,12 @@ components:
     EducationalBackground:
       type: object
       properties:
-        school_name:
+        schoolName:
           type: string
-        first_date:
+        firstDate:
           type: string
           format: date
-        last_date:
+        lastDate:
           type: string
           format: date
         faculty:
