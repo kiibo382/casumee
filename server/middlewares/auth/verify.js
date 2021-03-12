@@ -38,10 +38,12 @@ export function isPasswordAndUserMatch(req, res, next) {
       if (hash === passwordFields[1]) {
         req.body = {
           userId: user[0]._id,
+          userName: user[0].userName,
           email: user[0].email,
           permissionLevel: user[0].permissionLevel,
           provider: "email",
-          name: user[0].firstName + " " + user[0].lastName,
+          firstName: user[0].firstName,
+          lastName: user[0].lastName,
         };
         return next();
       } else {

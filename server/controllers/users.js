@@ -1,7 +1,7 @@
 import {
   createUser,
   list,
-  findById,
+  findByUserName,
   putUser,
   removeUser,
 } from "../models/users.js";
@@ -12,13 +12,14 @@ import crypto from "crypto";
 
 export function insert(req, res) {
   const salt = crypto.randomBytes(16).toString("base64");
-  const hash = crypto.createHmac("sha512", salt)
+  const hash = crypto
+    .createHmac("sha512", salt)
     .update(req.body.password)
     .digest("base64");
   req.body.password = salt + "$" + hash;
   req.body.permissionLevel = 1;
   createUser(req.body).then((result) => {
-    res.status(201).send({ id: result._id });
+    res.status(201).send();
   });
 }
 
@@ -39,7 +40,7 @@ export function getList(req, res) {
 
 export function login(req, res) {
   try {
-    const refreshId = req.body.userId + secret;
+    const refreshId = req.body.userName + secret;
     const salt = crypto.randomBytes(16).toString("base64");
     const hash = crypto
       .createHmac("sha512", salt)
@@ -65,29 +66,35 @@ export function logout(req, res, next) {
   }
 }
 
-export function getById(req, res) {
-  findById(req.params.userId).then((result) => {
-    res.status(200).send(result);
-  });
+export function getByUserName(req, res) {
+  try {
+    findByUserName(req.params.userName).then((result) => {
+      console.log(result)
+      res.status(200).send(result);
+    });
+  } catch (err) {
+    res.status(500).send({ errors: err });
+  }
 }
 
-export function putById(req, res) {
+export function putByUserName(req, res) {
   if (req.body.password) {
     const salt = crypto.randomBytes(16).toString("base64");
-    const hash = crypto.createHmac("sha512", salt)
+    const hash = crypto
+      .createHmac("sha512", salt)
       .update(req.body.password)
       .digest("base64");
     req.body.password = salt + "$" + hash;
   }
 
-  putUser(req.params.userId, req.body).then((result) => {
+  putUser(req.params.userName, req.body).then((result) => {
     res.status(204).send({});
   });
 }
 
-export function removeById(req, res) {
-  console.log(req.params.userId);
-  removeUser(req.params.userId).then((result) => {
+export function removeByUserName(req, res) {
+  console.log(req.params.userName);
+  removeUser(req.params.userName).then((result) => {
     res.status(204).send({});
   });
 }

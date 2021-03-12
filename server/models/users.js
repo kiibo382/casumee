@@ -3,7 +3,7 @@ import mongoose from "../config/mongoose.js";
 const Schema = mongoose.Schema;
 
 const carrerSchema = new Schema({
-  groupName: {
+  groupname: {
     type: String,
     required: true,
   },
@@ -17,7 +17,7 @@ const carrerSchema = new Schema({
 });
 
 const educationalBackgroudSchema = new Schema({
-  schoolName: {
+  schoolname: {
     type: String,
     required: true,
   },
@@ -35,6 +35,7 @@ const educationalBackgroudSchema = new Schema({
 const userSchema = new Schema({
   userName: {
     type: String,
+    unique: true,
     required: true,
   },
   firstName: {
@@ -86,8 +87,10 @@ userSchema.set("toJSON", {
   virtuals: true,
 });
 
-userSchema.findById = function (cb) {
-  return this.model("Users").find({ id: this.id }, cb);
+userSchema.findByUserName = function (argumentUserName) {
+  console.log(this.userName);
+  console.log(this.model("Users").find({ userName: argumentUserName }));
+  return this.model("Users").find({ userName: argumentUserName });
 };
 
 const User = mongoose.model("Users", userSchema);
@@ -96,13 +99,19 @@ export function findByEmail(email) {
   return User.find({ email: email });
 }
 
-export function findById(id) {
-  return User.findById(id).then((result) => {
-    result = result.toJSON();
-    delete result._id;
-    delete result.__v;
-    return result;
-  });
+export function findByUserName(userName) {
+  try {
+    return User.findByUserName(userName)
+      .then((result) => {
+        result = result.toJSON();
+        delete result.userName;
+        delete result.__v;
+        return result;
+      });
+  } catch (err) {
+    res.status(500).send({ errors: err });
+  }
+
 }
 
 export function createUser(userData) {
@@ -125,18 +134,18 @@ export function list(perPage, page) {
   });
 }
 
-export function putUser(id, userData) {
+export function putUser(userName, userData) {
   return User.findOneAndUpdate(
     {
-      _id: id,
+      userName: userName,
     },
     userData
   );
 }
 
-export function removeUser(userId) {
+export function removeUser(userName) {
   return new Promise((resolve, reject) => {
-    User.deleteMany({ _id: userId }, (err) => {
+    User.deleteMany({ userName: userName }, (err) => {
       if (err) {
         reject(err);
       } else {
