@@ -69,7 +69,6 @@ export function logout(req, res, next) {
 export function getByUserName(req, res) {
   try {
     findByUserName(req.params.userName).then((result) => {
-      console.log(result)
       res.status(200).send(result);
     });
   } catch (err) {
@@ -87,14 +86,13 @@ export function putByUserName(req, res) {
     req.body.password = salt + "$" + hash;
   }
 
-  putUser(req.params.userName, req.body).then((result) => {
+  putUser(req.jwt.userName, req.body).then((result) => {
     res.status(204).send({});
   });
 }
 
 export function removeByUserName(req, res) {
-  console.log(req.params.userName);
-  removeUser(req.params.userName).then((result) => {
+  removeUser(req.jwt.userName).then((result) => {
     res.status(204).send({});
   });
 }

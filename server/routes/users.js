@@ -53,14 +53,14 @@ router.get("/self", [
 router.put("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  onlySameUserOrAdminCanDoThisAction,
+  // onlySameUserOrAdminCanDoThisAction,
   putByUserName,
 ]);
 
 router.delete("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  onlySameUserOrAdminCanDoThisAction,
+  // onlySameUserOrAdminCanDoThisAction,
   removeByUserName,
 ]);
 

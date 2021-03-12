@@ -18,7 +18,6 @@ export function onlySameUserOrAdminCanDoThisAction(req, res, next) {
   const user_permission_level = parseInt(req.jwt.permissionLevel);
   const userName = req.jwt.userName;
   if (req.params && req.params.userName && userName === req.params.userName) {
-    console.log("permission ok")
     return next();
   } else {
     if (user_permission_level & ADMIN_PERMISSION) {
