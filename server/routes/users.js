@@ -12,9 +12,7 @@ import {
   hasAuthValidFields,
   isPasswordAndUserMatch,
 } from "../middlewares/auth/verify.js";
-import {
-  minimumPermissionLevelRequired
-} from "../middlewares/users/permission.js";
+import { minimumPermissionLevelRequired } from "../middlewares/users/permission.js";
 import { validJWTNeeded } from "../middlewares/users/validation.js";
 import envConfig from "../config/env.config.js";
 const permissionLevels = envConfig.permissionLevels;
