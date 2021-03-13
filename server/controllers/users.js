@@ -40,7 +40,7 @@ export function getList(req, res) {
 
 export function login(req, res) {
   try {
-    const refreshId = req.body.userName + secret;
+    const refreshId = req.body.email + secret;
     const salt = crypto.randomBytes(16).toString("base64");
     const hash = crypto
       .createHmac("sha512", salt)
@@ -57,7 +57,7 @@ export function login(req, res) {
   }
 }
 
-export function logout(req, res, next) {
+export function logout(req, res) {
   if (req.session.token) {
     req.session.token = "";
     res.status(200).send();
@@ -66,11 +66,28 @@ export function logout(req, res, next) {
   }
 }
 
+export function getSelf(req, res) {
+  try {
+    findByUserName(req.jwt.userName).then((result) => {
+      if (result) {
+        res.status(200).send(result);
+      } else {
+        res.status(404).send(result);
+      }
+    });
+  } catch (err) {
+    res.status(500).send({ errors: err });
+  }
+}
+
 export function getByUserName(req, res) {
   try {
     findByUserName(req.params.userName).then((result) => {
-      console.log(result)
-      res.status(200).send(result);
+      if (result) {
+        res.status(200).send(result);
+      } else {
+        res.status(404).send(result);
+      }
     });
   } catch (err) {
     res.status(500).send({ errors: err });
@@ -87,14 +104,14 @@ export function putByUserName(req, res) {
     req.body.password = salt + "$" + hash;
   }
 
-  putUser(req.params.userName, req.body).then((result) => {
+  putUser(req.jwt.userName, req.body).then((result) => {
     res.status(204).send({});
   });
 }
 
 export function removeByUserName(req, res) {
-  console.log(req.params.userName);
-  removeUser(req.params.userName).then((result) => {
-    res.status(204).send({});
+  removeUser(req.jwt.userName).then((result) => {
+    req.session.token = "";
+    res.status(204).send(result);
   });
 }

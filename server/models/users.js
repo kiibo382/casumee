@@ -82,36 +82,27 @@ userSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-// Ensure virtual fields are serialised.
 userSchema.set("toJSON", {
   virtuals: true,
 });
 
-userSchema.findByUserName = function (argumentUserName) {
-  console.log(this.userName);
-  console.log(this.model("Users").find({ userName: argumentUserName }));
-  return this.model("Users").find({ userName: argumentUserName });
-};
-
 const User = mongoose.model("Users", userSchema);
 
 export function findByEmail(email) {
-  return User.find({ email: email });
+  return User.find({ "email": email })
 }
 
 export function findByUserName(userName) {
-  try {
-    return User.findByUserName(userName)
-      .then((result) => {
-        result = result.toJSON();
-        delete result.userName;
-        delete result.__v;
-        return result;
+  return new Promise((resolve, reject) => {
+    User.findOne({ "userName": userName })
+      .exec(function (err, user) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(user)
+        }
       });
-  } catch (err) {
-    res.status(500).send({ errors: err });
-  }
-
+  });
 }
 
 export function createUser(userData) {
@@ -135,22 +126,16 @@ export function list(perPage, page) {
 }
 
 export function putUser(userName, userData) {
-  return User.findOneAndUpdate(
-    {
-      userName: userName,
-    },
-    userData
-  );
+  return User.findOneAndUpdate({ "userName": userName }, userData);
 }
 
 export function removeUser(userName) {
-  return new Promise((resolve, reject) => {
-    User.deleteMany({ userName: userName }, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(err);
-      }
-    });
-  });
+  return User.deleteMany({ "userName": userName })
+    .then(() => {
+      console.log("success")
+    })
+    .catch(() => {
+      console.log("error")
+      return "error"
+    })
 }
