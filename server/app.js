@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(session(sess));
 
-const rootPath = import.meta.url.replace("/server/app.js", "")
+const rootPath = import.meta.url.replace("/server/app.js", "");
 app.set("views", path.join(rootPath + "/client/views"));
 app.set("view engine", "ejs");
 

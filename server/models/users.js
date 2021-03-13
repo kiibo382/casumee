@@ -89,17 +89,20 @@ userSchema.set("toJSON", {
 const User = mongoose.model("Users", userSchema);
 
 export function findByEmail(email) {
-  return User.find({ "email": email })
+  return User.find({ email: email });
 }
 
 export function findByUserName(userName) {
   return new Promise((resolve, reject) => {
-    User.findOne({ "userName": userName })
+    User.findOne({ userName: userName })
+      .select(
+        "userName firstName lastName email groupEmail profile age occupation carrer educationalBackground"
+      )
       .exec(function (err, user) {
         if (err) {
           reject(err);
         } else {
-          resolve(user)
+          resolve(user);
         }
       });
   });
@@ -115,6 +118,7 @@ export function list(perPage, page) {
     User.find()
       .limit(perPage)
       .skip(perPage * page)
+      .select("userName firstName lastName email groupEmail profile age occupation carrer educationalBackground")
       .exec(function (err, users) {
         if (err) {
           reject(err);
@@ -126,16 +130,13 @@ export function list(perPage, page) {
 }
 
 export function putUser(userName, userData) {
-  return User.findOneAndUpdate({ "userName": userName }, userData);
+  return User.findOneAndUpdate({ userName: userName }, userData);
 }
 
-export function removeUser(userName) {
-  return User.deleteMany({ "userName": userName })
-    .then(() => {
-      console.log("success")
-    })
-    .catch(() => {
-      console.log("error")
-      return "error"
-    })
+export async function removeUser(userName) {
+  try {
+    return User.deleteMany({ userName: userName });
+  } catch (e) {
+    return "error";
+  }
 }
