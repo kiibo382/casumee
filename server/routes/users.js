@@ -1,5 +1,6 @@
 import {
   insert,
+  getSelf,
   getList,
   login,
   logout,
@@ -12,8 +13,7 @@ import {
   isPasswordAndUserMatch,
 } from "../middlewares/auth/verify.js";
 import {
-  minimumPermissionLevelRequired,
-  onlySameUserOrAdminCanDoThisAction,
+  minimumPermissionLevelRequired
 } from "../middlewares/users/permission.js";
 import { validJWTNeeded } from "../middlewares/users/validation.js";
 import envConfig from "../config/env.config.js";
@@ -39,35 +39,30 @@ router.post("/login", [hasAuthValidFields, isPasswordAndUserMatch, login]);
 router.post("/logout", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  onlySameUserOrAdminCanDoThisAction,
   logout,
 ]);
 
 router.get("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  onlySameUserOrAdminCanDoThisAction
-  // getSelf,
+  getSelf,
 ]);
 
 router.put("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  // onlySameUserOrAdminCanDoThisAction,
   putByUserName,
 ]);
 
 router.delete("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  // onlySameUserOrAdminCanDoThisAction,
   removeByUserName,
 ]);
 
 router.get("/:userName", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  onlySameUserOrAdminCanDoThisAction,
   getByUserName,
 ]);
 

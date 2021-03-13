@@ -66,6 +66,16 @@ export function logout(req, res, next) {
   }
 }
 
+export function getSelf(req, res) {
+  try {
+    findByUserName(req.jwt.userName).then((result) => {
+      res.status(200).send(result);
+    });
+  } catch (err) {
+    res.status(500).send({ errors: err });
+  }
+}
+
 export function getByUserName(req, res) {
   try {
     findByUserName(req.params.userName).then((result) => {

@@ -93,20 +93,16 @@ export function findByEmail(email) {
 }
 
 export function findByUserName(userName) {
-  return new Promise((resolve, reject) => {
-    User.findOne({ "userName": userName })
-      .then((result) => {
-        result = result.toJSON();
-        delete result.__v;
-        delete result.userName;
-        delete result._id;
-        delete result.id;
-        delete result.password;
-        return result;
-      })
-      .catch(err => alert(err))
-  });
+  return User.findOne({ "userName": userName });
 }
+
+
+export function sample(userName) {
+  return new Promise((resolve, reject) => {
+
+  })
+}
+
 
 export function createUser(userData) {
   const user = new User(userData);
@@ -138,13 +134,13 @@ export function putUser(userName, userData) {
 }
 
 export function removeUser(userName) {
-  return new Promise((resolve, reject) => {
-    User.deleteMany({ "userName": userName }, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(err);
-      }
-    });
-  });
+  // return new Promise(function (resolve, reject) {
+  //   const result = User.deleteMany({ "userName": userName });
+  //   if (result) {
+  //     resolve(result)
+  //   } else {
+  //     reject()
+  //   }
+  // })
+  return User.deleteMany({ "userName": userName })
 }
