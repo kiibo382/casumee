@@ -1,6 +1,6 @@
 import {
   createUser,
-  list,
+  userList,
   findByUserName,
   putUser,
   removeUser,
@@ -10,7 +10,7 @@ const secret = envConfig.jwt_secret;
 import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
 
-export function insert(req, res) {
+export function insertUser(req, res) {
   const salt = crypto.randomBytes(16).toString("base64");
   const hash = crypto
     .createHmac("sha512", salt)
@@ -23,7 +23,7 @@ export function insert(req, res) {
   });
 }
 
-export function getList(req, res) {
+export function getUserList(req, res) {
   const limit =
     req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
   const page = 0;
@@ -33,7 +33,7 @@ export function getList(req, res) {
       page = Number.isInteger(req.query.page) ? req.query.page : 0;
     }
   }
-  list(limit, page).then((result) => {
+  userList(limit, page).then((result) => {
     res.status(200).send(result);
   });
 }

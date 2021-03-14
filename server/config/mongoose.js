@@ -2,8 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 
-let count = 0;
-
 const options = {
   autoIndex: false,
   poolSize: 10,
@@ -24,8 +22,7 @@ const connectWithRetry = () => {
     })
     .catch((err) => {
       console.log(
-        "MongoDB connection unsuccessful, retry after 5 seconds. ",
-        ++count
+        "MongoDB connection unsuccessful, retry after 5 seconds. "
       );
       setTimeout(connectWithRetry, 5000);
     });

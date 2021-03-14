@@ -1,7 +1,7 @@
 import {
-  insert,
+  insertUser,
   getSelf,
-  getList,
+  getUserList,
   login,
   logout,
   getByUserName,
@@ -24,12 +24,12 @@ const FREE = permissionLevels.NORMAL_USER;
 import express from "express";
 const router = express.Router();
 
-router.post("/", insert);
+router.post("/", insertUser);
 
 router.get("/", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  getList,
+  getUserList,
 ]);
 
 router.post("/login", [hasAuthValidFields, isPasswordAndUserMatch, login]);

@@ -16,7 +16,7 @@ const carrerSchema = new Schema({
   contents: String,
 });
 
-const educationalBackgroudSchema = new Schema({
+const educationalBackgroundSchema = new Schema({
   schoolname: {
     type: String,
     required: true,
@@ -75,26 +75,18 @@ const userSchema = new Schema({
   age: Number,
   occupation: String,
   carrer: [carrerSchema],
-  educationalBackgroud: [educationalBackgroudSchema],
-});
-
-userSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-userSchema.set("toJSON", {
-  virtuals: true,
+  educationalBackground: [educationalBackgroundSchema],
 });
 
 const User = mongoose.model("Users", userSchema);
 
 export function findByEmail(email) {
-  return User.find({ email: email });
+  return User.find({ "email": email });
 }
 
 export function findByUserName(userName) {
   return new Promise((resolve, reject) => {
-    User.findOne({ userName: userName })
+    User.findOne({ "userName": userName })
       .select(
         "userName firstName lastName email groupEmail profile age occupation carrer educationalBackground"
       )
@@ -105,7 +97,15 @@ export function findByUserName(userName) {
           resolve(user);
         }
       });
-  });
+  })
+    .then((result) => {
+      result = result.toJSON();
+      delete result._id;
+      return result
+    })
+    .catch(() => {
+      return null
+    })
 }
 
 export function createUser(userData) {
@@ -113,7 +113,7 @@ export function createUser(userData) {
   return user.save();
 }
 
-export function list(perPage, page) {
+export function userList(perPage, page) {
   return new Promise((resolve, reject) => {
     User.find()
       .limit(perPage)
@@ -126,17 +126,17 @@ export function list(perPage, page) {
           resolve(users);
         }
       });
-  });
+  })
 }
 
 export function putUser(userName, userData) {
-  return User.findOneAndUpdate({ userName: userName }, userData);
+  return User.findOneAndUpdate({ "userName": userName }, userData);
 }
 
 export async function removeUser(userName) {
   try {
-    return User.deleteMany({ userName: userName });
+    return User.deleteMany({ "userName": userName });
   } catch (e) {
-    return "error";
+    return e;
   }
 }
