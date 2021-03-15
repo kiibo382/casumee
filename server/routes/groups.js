@@ -1,15 +1,15 @@
 import {
-    insertGroup,
+    registerGroup,
     getGroupList,
     getByGroupName,
     putByGroupName,
     removeByGroupName,
-    getMembers,
-    addMember,
-    removeMember,
-    getApplicants,
-    addApplicant,
-    removeApplicant
+    getMembersByGroupName,
+    addMemberByGroupName,
+    removeMemberByGroupName,
+    getApplicantsByGroupName,
+    addApplicantByGroupName,
+    removeApplicantByGroupName
 } from "../controllers/groups.js";
 import { isGroupMember } from "../middlewares/groups/verify.js"
 import { minimumPermissionLevelRequired } from "../middlewares/users/permission.js";
@@ -27,7 +27,7 @@ const router = express.Router();
 router.post("/", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
-    insertGroup,
+    registerGroup,
 ]);
 
 router.get("/", [
@@ -59,42 +59,42 @@ router.delete("/:groupName", [
 router.get("/:groupName/members", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
-    getMembers,
+    getMembersByGroupName,
 ]);
 
 router.post("/:groupName/members", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
     isGroupMember,
-    addMember,
-    removeApplicant
+    addMemberByGroupName,
+    removeApplicantByGroupName
 ]);
 
 router.delete("/:groupName/members", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
     isGroupMember,
-    removeMember
+    removeMemberByGroupName
 ]);
 
 router.post("/:groupName/applicants", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
-    addApplicant
+    addApplicantByGroupName
 ]);
 
 router.get("/:groupName/applicants", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
     isGroupMember,
-    getApplicants
+    getApplicantsByGroupName
 ]);
 
 router.delete("/:groupName/applicants", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
     isGroupMember,
-    removeApplicant
+    removeApplicantByGroupName
 ]);
 
 export default router;

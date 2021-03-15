@@ -99,8 +99,6 @@ export function findByUserName(userName) {
       });
   })
     .then((result) => {
-      result = result.toJSON();
-      delete result._id;
       return result
     })
     .catch(() => {
@@ -140,3 +138,5 @@ export async function removeUser(userName) {
     return e;
   }
 }
+
+export default Users

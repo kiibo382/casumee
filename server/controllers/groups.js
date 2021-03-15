@@ -5,6 +5,8 @@ import {
   putGroup,
   removeGroup,
   getMembers,
+  addMember,
+  addApplicant,
   removeMember,
   getApplicants,
   removeApplicant
@@ -13,7 +15,7 @@ import envConfig from "../config/env.config.js";
 const secret = envConfig.jwt_secret;
 import crypto from "crypto";
 
-export function insertGroup(req, res) {
+export function registerGroup(req, res) {
   if (req.body.password) {
     const salt = crypto.randomBytes(16).toString("base64");
     const hash = crypto
@@ -22,8 +24,10 @@ export function insertGroup(req, res) {
       .digest("base64");
     req.body.password = salt + "$" + hash;
   }
-  createGroup(req.body).then((result) => {
-    res.status(201).send();
+  createGroup(req.body).then(() => {
+    addMember(req.body.groupName, req.jwt.userName).then(() => {
+      res.status(201).send();
+    });
   });
 }
 
@@ -66,7 +70,7 @@ export function putByGroupName(req, res) {
     req.body.password = salt + "$" + hash;
   }
 
-  putGroup(req.jwt.groupName, req.body).then((result) => {
+  putGroup(req.params.groupName, req.body).then((result) => {
     res.status(204).send({});
   });
 }
@@ -77,7 +81,7 @@ export function removeByGroupName(req, res) {
   });
 }
 
-export function getMembers(req, res) {
+export function getMembersByGroupName(req, res) {
   try {
     getMembers(req.params.groupName).then((result) => {
       if (result) {
@@ -91,19 +95,19 @@ export function getMembers(req, res) {
   }
 }
 
-export function addMember(req, res) {
-  addMember(req.params.groupName, req.params.userName).then((result) => {
+export function addMemberByGroupName(req, res) {
+  addMember(req.params.groupName, req.body.userName).then((result) => {
     res.status(204).send();
   });
 }
 
-export function removeMember(req, res) {
-  removeMember(req.params.groupName, req.params.userName).then((result) => {
+export function removeMemberByGroupName(req, res) {
+  removeMember(req.params.groupName, req.body.userName).then((result) => {
     res.status(204).send();
   });
 }
 
-export function getApplicants(req, res) {
+export function getApplicantsByGroupName(req, res) {
   try {
     getApplicants(req.params.groupName).then((result) => {
       if (result) {
@@ -117,14 +121,19 @@ export function getApplicants(req, res) {
   }
 }
 
-export function addApplicant(req, res) {
-  addMember(req.params.groupName, req.params.userName).then((result) => {
-    res.status(204).send();
-  });
+export function addApplicantByGroupName(req, res) {
+  addApplicant(req.params.groupName, req.body.userName)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).send(err)
+    })
 }
 
-export function removeApplicant(req, res) {
-  removeApplicant(req.params.groupName, req.params.userName).then((result) => {
+export function removeApplicantByGroupName(req, res) {
+  removeApplicant(req.params.groupName, req.body.userName).then(() => {
     res.status(204).send();
   });
 }

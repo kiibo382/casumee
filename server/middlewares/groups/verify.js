@@ -1,4 +1,4 @@
-import { getMembers } from "../../models/groups"
+import { getMembers } from "../../models/groups.js"
 
 export function isGroupMember(req, res, next) {
     getMembers(req.params.groupName).then((members) => {

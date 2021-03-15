@@ -1,4 +1,5 @@
 import mongoose from "../config/mongoose.js";
+import { findByUserName } from "./users.js"
 
 const Schema = mongoose.Schema;
 
@@ -44,7 +45,7 @@ const Groups = mongoose.model("Groups", groupsSchema);
 
 export function findByGroupName(groupName) {
     return new Promise((resolve, reject) => {
-        Groups.findOne({ "gruopName": groupName })
+        Groups.findOne({ "groupName": groupName })
             .select("groupName emailDomain urls intern newCareer midCareer industry profile members")
             .exec(function (err, group) {
                 if (err) {
@@ -134,7 +135,22 @@ export function removeMember(groupName, userName) {
 }
 
 export function addApplicant(groupName, userName) {
-    return Groups.where({ "groupName": groupName }).update({ $push: { "applicants": userName } });
+    console.log(groupName)
+    findByUserName(userName).then((user) => {
+        console.log(user)
+        return Groups.where({ "groupName": groupName }).updateOne({ $push: { "applicants": user._id } });
+    })
+    // return Groups.findOneAndUpdate(
+    //     { "groupName": groupName },
+    //     { $push: { "applicants": user._id } },
+    //     (err, success) => {
+    //         if (err) {
+    //             console.log(err);
+    //             return err;
+    //         } else {
+    //             return success;
+    //         }
+    //     });
 }
 
 export function removeApplicant(groupName, userName) {
