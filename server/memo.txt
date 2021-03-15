@@ -4,31 +4,31 @@
     /:groupName GET
                 PUT
                 DELETE
-    /members    GET
-                POST（jsonでgroupName、userNameを送る）
-                DELETE
-    /applicants GET
-                POST（jsonでgroupName、userNameを送る）
-                DELETE（jsonでgroupName、userNameを送る）
-    /chat/groupName
+    /:groupName/members GET
+                        POST（jsonでgroupName、userNameを送る）
+                        DELETE（jsonでgroupName、userNameを送る）
+    /:groupName/applicants  GET
+                            POST（jsonでgroupName、userNameを送る）
+                            DELETE（jsonでgroupName、userNameを送る）
+    /:groupName/chat
 /users
     /groups GET
 
 
-memberじゃないとapplicants、groupName、memberNameにアクセスできない。
-
 loginしてないとgroupsにはアクセスできない。
 
 GET /
-GET /goupName
-POST /applicants/userName 
+POST /
+GET /:goupName
+GET /:goupName/members
+POST /:groupName/applicants
 以外はreq.jwt.userNameがmembersに含まれているかcheck
 
 applicant はmembersに参加キャンセル申請を出せる。
 
 POST /members が成功したら自動でapplicantsから削除
 
-/chat/:groupName では、membersにあればmemberと画面に表示、membersになければnon-memberと表示。
+/:groupName/chat では、membersにあればmemberと画面に表示、membersになければnon-memberと表示。
 
 
 

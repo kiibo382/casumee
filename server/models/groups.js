@@ -1,9 +1,8 @@
 import mongoose from "../config/mongoose.js";
-import { userSchema } from "./users";
 
 const Schema = mongoose.Schema;
 
-const urlSchema = new Schema({
+const urlsSchema = new Schema({
     name: String,
     url: {
         type: String,
@@ -11,7 +10,7 @@ const urlSchema = new Schema({
     }
 })
 
-const groupSchema = new Schema({
+const groupsSchema = new Schema({
     groupName: {
         type: String,
         unique: true,
@@ -22,7 +21,7 @@ const groupSchema = new Schema({
         unique: true
     },
     password: String,
-    urls: [urlSchema],
+    urls: [urlsSchema],
     intern: {
         type: Boolean,
         default: false
@@ -37,15 +36,15 @@ const groupSchema = new Schema({
     },
     industry: String,
     profile: String,
-    members: [String],
-    applicants: [String]
+    members: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
+    applicants: [{ type: Schema.Types.ObjectId, ref: 'Users' }]
 });
 
-const Group = mongoose.model("Group", groupSchema);
+const Groups = mongoose.model("Groups", groupsSchema);
 
 export function findByGroupName(groupName) {
     return new Promise((resolve, reject) => {
-        Group.findOne({ "gruopName": groupName })
+        Groups.findOne({ "gruopName": groupName })
             .select("groupName emailDomain urls intern newCareer midCareer industry profile members")
             .exec(function (err, group) {
                 if (err) {
@@ -66,13 +65,13 @@ export function findByGroupName(groupName) {
 }
 
 export function createGroup(groupData) {
-    const group = new Group(groupData);
+    const group = new Groups(groupData);
     return group.save();
 }
 
 export function groupList(perPage, page) {
     return new Promise((resolve, reject) => {
-        Group.find()
+        Groups.find()
             .limit(perPage)
             .skip(perPage * page)
             .select("groupName emailDomain urls intern newCareer midCareer industry profile members")
@@ -87,25 +86,57 @@ export function groupList(perPage, page) {
 }
 
 export function putGroup(groupName, groupData) {
-    return Group.findOneAndUpdate({ "groupName": groupName }, groupData);
+    return Groups.findOneAndUpdate({ "groupName": groupName }, groupData);
 }
 
 export async function removeGroup(groupName) {
     try {
-        return Group.deleteMany({ "groupName": groupName });
+        return Groups.deleteMany({ "groupName": groupName });
     } catch (e) {
         return e;
     }
 }
 
-export function GetMembers(groupName, userName) {
-    return Group.where({ "groupName": groupName }).update({ $push: { "members": userName } });
+export function getMembers(groupName) {
+    return new Promise((resolve, reject) => {
+        Groups.find({ "groupName": groupName })
+            .select("members")
+            .exec((err, members) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(members);
+                }
+            });
+    })
+}
+
+export function getApplicants(groupName) {
+    return new Promise((resolve, reject) => {
+        Groups.find({ "groupName": groupName })
+            .select("applicants")
+            .exec((err, applicants) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(applicants);
+                }
+            });
+    })
 }
 
 export function addMember(groupName, userName) {
-    return Group.where({ "groupName": groupName }).update({ $push: { "members": userName } });
+    return Groups.where({ "groupName": groupName }).update({ $push: { "members": userName } });
+}
+
+export function removeMember(groupName, userName) {
+    return Groups.where({ "groupName": groupName }).update({ $pop: { "members": userName } });
 }
 
 export function addApplicant(groupName, userName) {
-    return Group.where({ "groupName": groupName }).update({ $push: { "applicants": userName } });
+    return Groups.where({ "groupName": groupName }).update({ $push: { "applicants": userName } });
+}
+
+export function removeApplicant(groupName, userName) {
+    return Groups.where({ "groupName": groupName }).update({ $pop: { "applicants": userName } });
 }
