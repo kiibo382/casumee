@@ -7,9 +7,9 @@ import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 
-import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
+import groupsRouter from "./routes/groups.js";
 
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient();
@@ -50,9 +50,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(rootPath + "/client/public")));
 
-app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
+app.use("/groups", groupsRouter);
 
 // io.on("connection", (socket)=>{
 //   console.log("ユーザーが接続しました");

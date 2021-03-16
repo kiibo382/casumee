@@ -2,7 +2,7 @@ import validator from "validator";
 import mongoose from "../config/mongoose.js";
 const Schema = mongoose.Schema;
 
-const carrerSchema = new Schema({
+const carrersSchema = new Schema({
   groupname: {
     type: String,
     required: true,
@@ -16,7 +16,7 @@ const carrerSchema = new Schema({
   contents: String,
 });
 
-const educationalBackgroudSchema = new Schema({
+const educationalBackgroundsSchema = new Schema({
   schoolname: {
     type: String,
     required: true,
@@ -32,7 +32,7 @@ const educationalBackgroudSchema = new Schema({
   achivement: String,
 });
 
-const userSchema = new Schema({
+const usersSchema = new Schema({
   userName: {
     type: String,
     unique: true,
@@ -74,27 +74,19 @@ const userSchema = new Schema({
   profile: String,
   age: Number,
   occupation: String,
-  carrer: [carrerSchema],
-  educationalBackgroud: [educationalBackgroudSchema],
+  carrer: [carrersSchema],
+  educationalBackground: [educationalBackgroundsSchema],
 });
 
-userSchema.virtual("id").get(function () {
-  return this._id.toHexString();
-});
-
-userSchema.set("toJSON", {
-  virtuals: true,
-});
-
-const User = mongoose.model("Users", userSchema);
+const Users = mongoose.model("Users", usersSchema);
 
 export function findByEmail(email) {
-  return User.find({ email: email });
+  return Users.find({ "email": email });
 }
 
 export function findByUserName(userName) {
   return new Promise((resolve, reject) => {
-    User.findOne({ userName: userName })
+    Users.findOne({ "userName": userName })
       .select(
         "userName firstName lastName email groupEmail profile age occupation carrer educationalBackground"
       )
@@ -105,17 +97,23 @@ export function findByUserName(userName) {
           resolve(user);
         }
       });
-  });
+  })
+    .then((result) => {
+      return result
+    })
+    .catch(() => {
+      return null
+    })
 }
 
 export function createUser(userData) {
-  const user = new User(userData);
+  const user = new Users(userData);
   return user.save();
 }
 
-export function list(perPage, page) {
+export function userList(perPage, page) {
   return new Promise((resolve, reject) => {
-    User.find()
+    Users.find()
       .limit(perPage)
       .skip(perPage * page)
       .select("userName firstName lastName email groupEmail profile age occupation carrer educationalBackground")
@@ -126,17 +124,19 @@ export function list(perPage, page) {
           resolve(users);
         }
       });
-  });
+  })
 }
 
 export function putUser(userName, userData) {
-  return User.findOneAndUpdate({ userName: userName }, userData);
+  return Users.findOneAndUpdate({ "userName": userName }, userData);
 }
 
 export async function removeUser(userName) {
   try {
-    return User.deleteMany({ userName: userName });
+    return Users.deleteMany({ "userName": userName });
   } catch (e) {
-    return "error";
+    return e;
   }
 }
+
+export default Users

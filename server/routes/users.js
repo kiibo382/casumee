@@ -1,7 +1,7 @@
 import {
-  insert,
+  insertUser,
   getSelf,
-  getList,
+  getUserList,
   login,
   logout,
   getByUserName,
@@ -15,21 +15,21 @@ import {
 import { minimumPermissionLevelRequired } from "../middlewares/users/permission.js";
 import { validJWTNeeded } from "../middlewares/users/validation.js";
 import envConfig from "../config/env.config.js";
-const permissionLevels = envConfig.permissionLevels;
+const userpermissionLevels = envConfig.permissionLevels;
 
-const ADMIN = permissionLevels.ADMIN;
-const PAID = permissionLevels.PAID_USER;
-const FREE = permissionLevels.NORMAL_USER;
+const ADMIN = userpermissionLevels.ADMIN;
+const PAID = userpermissionLevels.PAID_USER;
+const FREE = userpermissionLevels.NORMAL_USER;
 
 import express from "express";
 const router = express.Router();
 
-router.post("/", insert);
+router.post("/", insertUser);
 
 router.get("/", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  getList,
+  getUserList,
 ]);
 
 router.post("/login", [hasAuthValidFields, isPasswordAndUserMatch, login]);
