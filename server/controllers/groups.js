@@ -24,12 +24,20 @@ export function registerGroup(req, res) {
       .digest("base64");
     req.body.password = salt + "$" + hash;
   }
-  createGroup(req.body).then(() => {
-    addMember(req.body.groupName, req.jwt.userName).then(() => {
+  try {
+    createGroup(req.body)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+  addMember(req.body.groupName, req.jwt.userName)
+    .then(() => {
       res.status(201).send();
-    });
-  });
-}
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).send(err)
+    })
+};
 
 export function getGroupList(req, res) {
   const limit =
@@ -95,18 +103,6 @@ export function getMembersByGroupName(req, res) {
   }
 }
 
-export function addMemberByGroupName(req, res) {
-  addMember(req.params.groupName, req.body.userName).then((result) => {
-    res.status(204).send();
-  });
-}
-
-export function removeMemberByGroupName(req, res) {
-  removeMember(req.params.groupName, req.body.userName).then((result) => {
-    res.status(204).send();
-  });
-}
-
 export function getApplicantsByGroupName(req, res) {
   try {
     getApplicants(req.params.groupName).then((result) => {
@@ -121,19 +117,42 @@ export function getApplicantsByGroupName(req, res) {
   }
 }
 
+export function addMemberByGroupName(req, res) {
+  addMember(req.params.groupName, req.body.userName)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err)
+    })
+}
+
+export function removeMemberByGroupName(req, res) {
+  removeMember(req.params.groupName, req.body.userName)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err)
+    })
+}
+
 export function addApplicantByGroupName(req, res) {
   addApplicant(req.params.groupName, req.body.userName)
     .then(() => {
       res.status(204).send();
     })
     .catch((err) => {
-      console.log(err)
       res.status(500).send(err)
     })
 }
 
 export function removeApplicantByGroupName(req, res) {
-  removeApplicant(req.params.groupName, req.body.userName).then(() => {
-    res.status(204).send();
-  });
+  removeApplicant(req.params.groupName, req.body.userName)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      res.status(500).send(err)
+    })
 }

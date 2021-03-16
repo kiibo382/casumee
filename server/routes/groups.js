@@ -12,14 +12,15 @@ import {
     removeApplicantByGroupName
 } from "../controllers/groups.js";
 import { isGroupMember } from "../middlewares/groups/verify.js"
+import { alreadyGroupMember } from "../middlewares/groups/validation.js"
 import { minimumPermissionLevelRequired } from "../middlewares/users/permission.js";
 import { validJWTNeeded } from "../middlewares/users/validation.js";
 import envConfig from "../config/env.config.js";
-const permissionLevels = envConfig.permissionLevels;
+const userPermissionLevels = envConfig.permissionLevels;
 
-const ADMIN = permissionLevels.ADMIN;
-const PAID = permissionLevels.PAID_USER;
-const FREE = permissionLevels.NORMAL_USER;
+const ADMIN = userPermissionLevels.ADMIN;
+const PAID = userPermissionLevels.PAID_USER;
+const FREE = userPermissionLevels.NORMAL_USER;
 
 import express from "express";
 const router = express.Router();
@@ -65,7 +66,7 @@ router.get("/:groupName/members", [
 router.post("/:groupName/members", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
-    isGroupMember,
+    alreadyGroupMember,
     addMemberByGroupName,
     removeApplicantByGroupName
 ]);
@@ -80,6 +81,7 @@ router.delete("/:groupName/members", [
 router.post("/:groupName/applicants", [
     validJWTNeeded,
     minimumPermissionLevelRequired(FREE),
+    alreadyGroupMember,
     addApplicantByGroupName
 ]);
 

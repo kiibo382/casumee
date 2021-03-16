@@ -100,13 +100,27 @@ export async function removeGroup(groupName) {
 
 export function getMembers(groupName) {
     return new Promise((resolve, reject) => {
-        Groups.find({ "groupName": groupName })
-            .select("members")
-            .exec((err, members) => {
+        Groups.findOne({ "groupName": groupName })
+            .populate("members")
+            .exec((err, result) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(members);
+                    resolve(result.members);
+                }
+            });
+    })
+}
+
+export function getMemberIds(groupName) {
+    return new Promise((resolve, reject) => {
+        Groups.findOne({ "groupName": groupName })
+            .select("members")
+            .exec((err, result) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
                 }
             });
     })
@@ -114,45 +128,55 @@ export function getMembers(groupName) {
 
 export function getApplicants(groupName) {
     return new Promise((resolve, reject) => {
-        Groups.find({ "groupName": groupName })
-            .select("applicants")
-            .exec((err, applicants) => {
+        Groups.findOne({ "groupName": groupName })
+            .populate("applicants")
+            .exec((err, result) => {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(applicants);
+                    resolve(result.applicants);
                 }
             });
     })
 }
 
 export function addMember(groupName, userName) {
-    return Groups.where({ "groupName": groupName }).update({ $push: { "members": userName } });
+    return findByUserName(userName)
+        .then((user) => {
+            return Groups.updateOne({ "groupName": groupName }, { $push: { "members": user._id } });
+        })
+        .catch((err) => {
+            return err
+        })
 }
 
 export function removeMember(groupName, userName) {
-    return Groups.where({ "groupName": groupName }).update({ $pop: { "members": userName } });
+    return findByUserName(userName)
+        .then((user) => {
+            return Groups.updateOne({ "groupName": groupName }, { $pop: { "members": user._id } });
+        })
+        .catch((err) => {
+            return err
+        })
 }
 
 export function addApplicant(groupName, userName) {
     console.log(groupName)
-    findByUserName(userName).then((user) => {
-        console.log(user)
-        return Groups.where({ "groupName": groupName }).updateOne({ $push: { "applicants": user._id } });
-    })
-    // return Groups.findOneAndUpdate(
-    //     { "groupName": groupName },
-    //     { $push: { "applicants": user._id } },
-    //     (err, success) => {
-    //         if (err) {
-    //             console.log(err);
-    //             return err;
-    //         } else {
-    //             return success;
-    //         }
-    //     });
+    return findByUserName(userName)
+        .then((user) => {
+            return Groups.updateOne({ "groupName": groupName }, { $push: { "applicants": user._id } });
+        })
+        .cathc((err) => {
+            return err
+        })
 }
 
 export function removeApplicant(groupName, userName) {
-    return Groups.where({ "groupName": groupName }).update({ $pop: { "applicants": userName } });
+    return findByUserName(userName)
+        .then((user) => {
+            return Groups.updateOne({ "groupName": groupName }, { $pop: { "applicants": user._id } });
+        })
+        .catch((err) => {
+            return err
+        })
 }

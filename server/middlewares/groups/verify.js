@@ -1,13 +1,16 @@
-import { getMembers } from "../../models/groups.js"
+import { getMemberIds } from "../../models/groups.js"
+import { findByUserName } from "../../models/users.js"
 
 export function isGroupMember(req, res, next) {
-    getMembers(req.params.groupName).then((members) => {
-        if (req.jwt.userName in members) {
-            next()
-        } else {
-            return res
-                .status(403)
-                .send({ errors: "You are not group member." });
-        }
+    findByUserName(req.jwt.userName).then((user) => {
+        getMemberIds(req.params.groupName).then((result) => {
+            if (result.members.includes(user._id)) {
+                next()
+            } else {
+                return res
+                    .status(403)
+                    .send({ errors: "You are not group member." });
+            }
+        })
     })
 }
