@@ -9,7 +9,7 @@ import connectRedis from "connect-redis";
 
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
-import groupsRouter from "./routes/groups.js";
+import groupsRouter from "./routes/groups.js"
 
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient();
@@ -41,18 +41,18 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(session(sess));
 
-const rootPath = import.meta.url.replace("/server/app.js", "");
-app.set("views", path.join(rootPath + "/client/views"));
+const serverDir = import.meta.url.replace("app.js", "");
+app.set("views", path.join(serverDir + "views"));
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(rootPath + "/client/public")));
+app.use(express.static(path.join(serverDir + "public")));
 
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
-app.use("/groups", groupsRouter);
+app.use("group", groupsRouter);
 
 // io.on("connection", (socket)=>{
 //   console.log("ユーザーが接続しました");
