@@ -3,12 +3,22 @@
 import app from "../app.js";
 import d from "debug";
 const debug = d("casumee-server:app");
-import http from "http";
+import httpModule from "http";
+import { Server } from "socket.io";
 
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
 
-const server = http.createServer(app);
+const server = httpModule.createServer(app);
+const socket = new Server(server);
+
+socket.on("connection", (socket) => {
+  console.log("user connected");
+
+  socket.on("group-post", (msg) => {
+    socket.emit("group-member-post", msg);
+  });
+});
 
 server.listen(port);
 server.on("error", onError);
