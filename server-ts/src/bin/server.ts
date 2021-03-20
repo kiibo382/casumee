@@ -3,26 +3,28 @@
 import app from "../app.js";
 import d from "debug";
 const debug = d("casumee-server:app");
-import httpModule from "http";
-import { Server } from "socket.io";
+import { createServer } from "http";
+// import socketio from "socket.io";
 
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
 
-const server = httpModule.createServer(app);
-const socket = new Server(server);
+const httpServer = createServer(app);
+// const io = socketio(httpServer, {
+//   pingInterval: 1000,
+//   pingTimeout: 5000
+// });
 
-socket.on("connection", (socket) => {
-  console.log("user connected");
+// io.on("connection", (socket: socketio.Socket) => {
+//   console.log("user connected");
 
-  socket.on("group-post", (msg: string) => {
-    socket.emit("group-member-post", msg);
-  });
-});
+//   socket.on("group-post", (msg: string) => {
+//     socket.emit("group-member-post", msg);
+//   });
+// });
 
-server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
+httpServer.listen(port);
+httpServer.on("error", onError);
 
 function normalizePort(val: string) {
   const port: number = parseInt(val, 10);
@@ -57,10 +59,4 @@ function onError(error: { syscall: string; code: any; }) {
     default:
       throw error;
   }
-}
-
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  debug("Listening on " + bind);
 }

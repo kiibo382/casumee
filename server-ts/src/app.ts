@@ -1,72 +1,98 @@
+import Express from 'express'
+import path from 'path'
+import router from './routes/index'
+import layouts from 'express-ejs-layouts'
+import mongoose from "mongoose"
 import createError from "http-errors";
-import express from "express";
-import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import cors from 'cors'
+import {dbConfig} from "./config/db.config"
 
-import usersRouter from "./routes/users.js";
-import authRouter from "./routes/auth.js";
-import groupsRouter from "./routes/groups.js"
+declare module 'express-session' {
+  interface SessionData {
+    token: any;
+  }
+}
 
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient();
 
-const app: express.Express = express();
-// const http = require("http").createServer(app);
-// const io   = require("socket.io")(http);
-
-app.use(cookieParser());
-let sess = {
-  secret: "secret_key",
-  resave: false,
-  saveUninitialized: false,
-  store: new RedisStore({
-    client: redisClient,
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    maxAge: 1000 * 60 * 30,
-    sameSite: "lax",
-  },
+const options = {
+  autoIndex: false,
+  poolSize: 10,
+  bufferMaxEntries: 0,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 };
+mongoose.connect(
+  `mongodb://${dbConfig.DB_USER}:${dbConfig.DB_PASS}@${dbConfig.HOST}:${dbConfig.DB_PORT}/${dbConfig.DB_NAME}`,
+  options
+)
+mongoose.Promise = global.Promise
+
+const app = Express()
+const port = 3000
+
+app.set('view engine', 'ejs')
+app.set('views', path.resolve(__dirname, 'views'))
+app.use(layouts)
+app.use(Express.static(__dirname + '/public'))
+app.use(logger("dev"));
+app.use(Express.json());
+app.use(Express.urlencoded({ extended: false }));
+
+app.use('/', router)
+
+app.use(cors());
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
-  sess.cookie.secure = true;
+  app.use(session(
+    {
+      secret: "secret_key",
+      resave: false,
+      saveUninitialized: false,
+      store: new RedisStore({
+        client: redisClient,
+      }),
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        maxAge: 1000 * 60 * 30,
+        sameSite: "lax",
+      },
+    }
+  ));
+} else {
+  app.use(session(
+    {
+      secret: "secret_key",
+      resave: false,
+      saveUninitialized: false,
+      store: new RedisStore({
+        client: redisClient,
+      }),
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 1000 * 60 * 30,
+        sameSite: "lax",
+      },
+    }
+  ));
 }
 
-app.use(session(sess));
 
-const serverDir = import.meta.url.replace("app.js", "");
-app.set("views", path.join(serverDir + "views"));
-app.set("view engine", "ejs");
-
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(serverDir + "public")));
-
-app.use("/users", usersRouter);
-app.use("/auth", authRouter);
-app.use("group", groupsRouter);
-
-// io.on("connection", (socket)=>{
-//   console.log("ユーザーが接続しました");
-
-//   socket.on("post", (msg)=>{
-//     io.emit("member-post", msg);
-//   });
-// });
-
-app.use(function (req, res, next) {
+app.use(function (req: Express.Request, res: Express.Response, next: Express.NextFunction) {
   next(createError(404));
 });
 
-app.use(function (err, req: express.Request, res: express.Response, next) {
+app.use(function (err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
 
