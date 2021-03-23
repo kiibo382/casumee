@@ -1,6 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config();
 import mongoose from "mongoose";
+import dbConfig from "./db.config.js"
 
 const options = {
   autoIndex: false,
