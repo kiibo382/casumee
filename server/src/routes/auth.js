@@ -12,7 +12,11 @@ import {
 import express from "express";
 const router = express.Router();
 
-router.post("/", [hasAuthValidFields, isPasswordAndUserMatch, returnToken]);
+router.post("/", [
+  hasAuthValidFields,
+  isPasswordAndUserMatch,
+  returnToken
+]);
 
 router.post("/refresh", [
   validJWTNeeded,

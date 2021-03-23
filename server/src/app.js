@@ -1,23 +1,29 @@
-import createError from "http-errors";
 import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
-import logger from "morgan";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import cors from 'cors'
+import log4js from 'log4js';
+
+let logger = log4js.getLogger();
+logger.level = 'debug';
+logger.debug("My Debug message");
+
 
 import usersRouter from "./routes/users.js";
 import authRouter from "./routes/auth.js";
+import staffRouter from "./routes/staff.js";
 import groupsRouter from "./routes/groups.js"
 
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient();
 
 const app = express();
-// const http = require("http").createServer(app);
-// const io   = require("socket.io")(http);
 
+app.use(log4js.connectLogger(logger, { level: process.env.LOG_LEVEL || 'debug' }));
+app.use(cors())
 app.use(cookieParser());
 let sess = {
   secret: "secret_key",
@@ -45,33 +51,13 @@ const serverDir = import.meta.url.replace("app.js", "");
 app.set("views", path.join(serverDir + "views"));
 app.set("view engine", "ejs");
 
-app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(serverDir + "public")));
 
-app.use("/users", usersRouter);
-app.use("/auth", authRouter);
-app.use("group", groupsRouter);
-
-// io.on("connection", (socket)=>{
-//   console.log("ユーザーが接続しました");
-
-//   socket.on("post", (msg)=>{
-//     io.emit("member-post", msg);
-//   });
-// });
-
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
-app.use(function (err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-
-  res.status(err.status || 500);
-  res.render("error");
-});
+app.use("/api/users", usersRouter);
+app.use("/api/staff", staffRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/groups", groupsRouter);
 
 export default app;

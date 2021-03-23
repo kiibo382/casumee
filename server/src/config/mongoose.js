@@ -10,11 +10,11 @@ const options = {
   useUnifiedTopology: true,
 };
 
-const connectWithRetry = () => {
+function connectWithRetry() {
   console.log("MongoDB connection with retry");
   mongoose
     .connect(
-      `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+      `mongodb://${dbConfig.DB_USER}:${dbConfig.DB_PASS}@${dbConfig.HOST}:${dbConfig.DB_PORT}/${dbConfig.DB_NAME}`,
       options
     )
     .then(() => {
@@ -24,6 +24,7 @@ const connectWithRetry = () => {
       console.log(
         "MongoDB connection unsuccessful, retry after 5 seconds. "
       );
+      console.log(err)
       setTimeout(connectWithRetry, 5000);
     });
 };
