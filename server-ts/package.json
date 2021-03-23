@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
     "start-dev": "NODE_ENV=development DEBUG=casumee-server:* nodemon ./dist/bin/server.js",
     "start-stg": "node ./dist//bin/server.js",
     "start-prd": "forever ./dist/bin/server.js",

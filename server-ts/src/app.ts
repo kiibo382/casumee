@@ -2,7 +2,6 @@ import Express from 'express'
 import path from 'path'
 import router from './routes/index'
 import layouts from 'express-ejs-layouts'
-import mongoose from "mongoose"
 import createError from "http-errors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
@@ -10,7 +9,7 @@ import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import cors from 'cors'
-import {dbConfig} from "./config/db.config"
+import {connectWithRetry} from "./config/mongoose"
 
 declare module 'express-session' {
   interface SessionData {
@@ -28,11 +27,8 @@ const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };
-mongoose.connect(
-  `mongodb://${dbConfig.DB_USER}:${dbConfig.DB_PASS}@${dbConfig.HOST}:${dbConfig.DB_PORT}/${dbConfig.DB_NAME}`,
-  options
-)
-mongoose.Promise = global.Promise
+
+connectWithRetry()
 
 const app = Express()
 const port = 3000
