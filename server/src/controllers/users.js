@@ -1,10 +1,4 @@
-import {
-  createUser,
-  userList,
-  findByUserName,
-  putUser,
-  removeUser,
-} from "../models/users.js";
+import Users from "../models/users.js";
 import envConfig from "../config/env.config.js";
 const secret = envConfig.jwt_secret;
 import jsonwebtoken from "jsonwebtoken";
@@ -18,7 +12,9 @@ export function insertUser(req, res) {
     .digest("base64");
   req.body.password = salt + "$" + hash;
   req.body.permissionLevel = 1;
-  createUser(req.body).then(() => {
+  const user = new Users(req.body);
+  user.save(function (err) {
+    if (err) res.status(500).send(err);
     res.status(201).send();
   });
 }
@@ -33,9 +29,15 @@ export function getUserList(req, res) {
       page = Number.isInteger(req.query.page) ? req.query.page : 0;
     }
   }
-  userList(limit, page).then((result) => {
-    res.status(200).send(result);
-  });
+  Users
+    .find()
+    .limit(limit)
+    .skip(page)
+    .select("userName firstName lastName email profile age gender sns")
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      res.status(200).send(result);
+    })
 }
 
 export function login(req, res) {
@@ -67,31 +69,27 @@ export function logout(req, res) {
 }
 
 export function getSelf(req, res) {
-  try {
-    findByUserName(req.jwt.userName).then((result) => {
-      if (result) {
-        res.status(200).send(result);
-      } else {
-        res.status(404).send(result);
-      }
-    });
-  } catch (err) {
-    res.status(500).send({ errors: err });
-  }
+  Users
+    .findOne({ "userName": req.jwt.userName })
+    .select(
+      "userName firstName lastName email profile age gender sns"
+    )
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      res.status(200).send(result);
+    })
 }
 
 export function getByUserName(req, res) {
-  try {
-    findByUserName(req.params.userName).then((result) => {
-      if (result) {
-        res.status(200).send(result);
-      } else {
-        res.status(404).send(result);
-      }
-    });
-  } catch (err) {
-    res.status(500).send({ errors: err });
-  }
+  Users
+    .findOne({ "userName": req.params.userName })
+    .select(
+      "userName firstName lastName email profile age gender sns"
+    )
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      res.status(200).send(result);
+    })
 }
 
 export function putByUserName(req, res) {
@@ -104,14 +102,20 @@ export function putByUserName(req, res) {
     req.body.password = salt + "$" + hash;
   }
 
-  putUser(req.jwt.userName, req.body).then(() => {
-    res.status(204).send();
-  });
+  Users
+    .findOneAndUpdate({ "userName": req.jwt.userName }, req.body)
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      res.status(200).send(result);
+    })
 }
 
 export function removeByUserName(req, res) {
-  removeUser(req.jwt.userName).then((result) => {
-    req.session.token = "";
-    res.status(204).send(result);
-  });
+  Users
+    .deleteOne({ "userName": userName })
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      req.session.token = "";
+      res.status(204).send(result);
+    })
 }
