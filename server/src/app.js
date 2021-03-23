@@ -25,7 +25,7 @@ const app = express();
 app.use(log4js.connectLogger(logger, { level: process.env.LOG_LEVEL || 'debug' }));
 app.use(cors())
 app.use(cookieParser());
-let sess = {
+const sess = {
   secret: "secret_key",
   resave: false,
   saveUninitialized: false,
@@ -34,18 +34,14 @@ let sess = {
   }),
   cookie: {
     httpOnly: true,
-    secure: false,
+    secure: (process.env.NODE_ENV === "production") ? true: false,
     maxAge: 1000 * 60 * 30,
     sameSite: "lax",
   },
 };
-
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
-  sess.cookie.secure = true;
 }
-
-app.use(session(sess));
 
 const serverDir = import.meta.url.replace("app.js", "");
 app.set("views", path.join(serverDir + "views"));

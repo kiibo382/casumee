@@ -6,7 +6,6 @@ casualに人とチャットまたはwebミーティングができるアプリ�
  - node v14.4.0
  - mongodb v4.4.2
  - redis v6.2.1
- - npm install -g nodemon
 
 ## Backend
 ### Build
