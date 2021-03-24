@@ -22,34 +22,32 @@ export default {
     Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
       if (err) res.status(500).send(err);
       if (!user) res.status(400).send("user not found");
-      await group = Groups.findOneAndUpdate({ "groupName": req.body.groupName }, { $push: { "members": user._id } })
+      Groups.findOneAndUpdate({ "groupName": req.body.groupName }, { $push: { "members": user._id } })
     })
     res.status(201).send();
   },
+
   getGroupList: (req: Express.Request, res: Express.Response) => {
-    const limit: number = 100
-    const page: number = 10
-    groupsModels.groupList(limit, page)
-      .then((result) => {
+    const limit = 100;
+    Groups.find()
+      .limit(limit)
+      .select("groupName emailDomain urls intern newCareer midCareer industry profile members")
+      .exec(function (err, result) {
+        if (err) res.status(500).send(err);
         res.status(200).send(result);
       })
-      .catch((err) => {
-        res.status(500).send(err)
+  },
+
+  getByGroupName: (req: Express.Request, res: Express.Response) => {
+    Groups
+      .findOne({ "groupName": req.params.groupName })
+      .select("groupName emailDomain urls intern newCareer midCareer industry profile members")
+      .exec(function (err, result) {
+        if (err) res.status(500).send(err);
+        res.status(200).send(result);
       })
   },
-  getByGroupName: (req: Express.Request, res: Express.Response) => {
-    try {
-      groupsModels.findByGroupName(req.params.groupName).then((result) => {
-        if (result) {
-          res.status(200).send(result);
-        } else {
-          res.status(404).send(result);
-        }
-      });
-    } catch (err) {
-      res.status(500).send({ errors: err });
-    }
-  },
+
   putByGroupName: (req: Express.Request, res: Express.Response) => {
     if (req.body.password) {
       const salt = crypto.randomBytes(16).toString("base64");
@@ -59,76 +57,87 @@ export default {
         .digest("base64");
       req.body.password = salt + "$" + hash;
     }
+    Groups
+      .findOneAndUpdate({ "groupName": req.params.groupName }, req.body)
+      .exec(function (err, result) {
+        if (err) res.status(500).send(err);
+        res.status(200).send(result);
+      })
+  },
 
-    groupsModels.putGroup(req.params.groupName, req.body).then((result) => {
-      res.status(204).send({});
-    });
-  },
   removeByGroupName: (req: Express.Request, res: Express.Response) => {
-    groupsModels.removeGroup(req.params.groupName).then((result) => {
-      res.status(204).send(result);
-    });
+    Groups
+      .deleteOne({ "groupName": req.params.groupName })
+      .exec(function (err, result) {
+        if (err) res.status(500).send(err);
+        res.status(204).send(result);
+      })
   },
+
   getMembersByGroupName: (req: Express.Request, res: Express.Response) => {
-    try {
-      groupsModels.getMembers(req.params.groupName).then((result) => {
-        if (result) {
+    Groups
+      .findOne({ "groupName": req.params.groupName })
+      .populate("members")
+      .exec(function (err, result) {
+        if (err) res.status(500).send(err);
+        res.status(200).send(result);
+      })
+  },
+
+  addMemberByGroupName: (req: Express.Request, res: Express.Response) => {
+    Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
+      if (err) res.status(500).send(err);
+      Groups
+        .updateOne({ "groupName": req.params.groupName }, { $push: { "members": user._id } })
+        .exec(function (err, result) {
+          if (err) res.status(500).send(err);
           res.status(200).send(result);
-        } else {
-          res.status(404).send(result);
-        }
-      });
-    } catch (err) {
-      res.status(500).send({ errors: err });
-    }
+        })
+    })
+  },
+
+  removeMemberByGroupName: (req: Express.Request, res: Express.Response) => {
+    Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
+      if (err) res.status(500).send(err);
+      Groups
+        .updateOne({ "groupName": req.params.groupName }, { $pull: { members: user._id } })
+        .exec(function (err, result) {
+          if (err) res.status(500).send(err);
+          res.status(200).send(result);
+        })
+    })
   },
   getApplicantsByGroupName: (req: Express.Request, res: Express.Response) => {
-    try {
-      groupsModels.getApplicants(req.params.groupName).then((result) => {
-        if (result) {
-          res.status(200).send(result);
-        } else {
-          res.status(404).send(result);
-        }
-      });
-    } catch (err) {
-      res.status(500).send({ errors: err });
-    }
-  },
-  addMemberByGroupName: (req: Express.Request, res: Express.Response) => {
-    groupsModels.addMember(req.params.groupName, req.body.userName)
-      .then(() => {
-        res.status(204).send();
-      })
-      .catch((err) => {
-        res.status(500).send(err)
+    Groups
+      .findOne({ "groupName": req.params.groupName })
+      .populate("applicant")
+      .exec(function (err, result) {
+        if (err) res.status(500).send(err);
+        res.status(200).send(result);
       })
   },
-  removeMemberByGroupName: (req: Express.Request, res: Express.Response) => {
-    groupsModels.removeMember(req.params.groupName, req.body.userName)
-      .then(() => {
-        res.status(204).send();
-      })
-      .catch((err) => {
-        res.status(500).send(err)
-      })
-  },
+
   addApplicantByGroupName: (req: Express.Request, res: Express.Response) => {
-    groupsModels.addApplicant(req.params.groupName, req.body.userName)
-      .then(() => {
-        res.status(204).send();
-      })
-      .catch((err) => {
-        res.status(500).send(err)
-      })
+    Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
+      if (err) res.status(500).send(err);
+      Groups
+        .updateOne({ "groupName": req.params.groupName }, { $push: { "applicants": user._id } })
+        .exec(function (err, result) {
+          if (err) res.status(500).send(err);
+          res.status(200).send(result);
+        })
+    })
   },
+
   removeApplicantByGroupName: (req: Express.Request, res: Express.Response) => {
-    groupsModels.removeApplicant(req.params.groupName, req.body.userName)
-      .then(() => {
-        res.status(204).send();
-      })
-      .catch((err) => {
-        res.status(500).send(err)
-      })
+    Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
+      if (err) res.status(500).send(err);
+      Groups
+        .updateOne({ "groupName": req.params.groupName }, { $pop: { "applicants": user._id } })
+        .exec(function (err, result) {
+          if (err) res.status(500).send(err);
+          res.status(200).send(result);
+        })
+    })
   }
 }

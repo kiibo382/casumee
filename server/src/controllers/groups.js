@@ -60,7 +60,7 @@ export function putByGroupName(req, res) {
     req.body.password = salt + "$" + hash;
   }
   Groups
-    .findOneAndUpdate({ "groupName": groupName }, groupData)
+    .findOneAndUpdate({ "groupName": req.params.groupName }, req.body)
     .exec(function (err, result) {
       if (err) res.status(500).send(err);
       res.status(200).send(result);
@@ -130,7 +130,7 @@ export function addApplicantByGroupName(req, res) {
     .exec(function (err, user) {
       if (err) res.status(500).send(err);
       Groups
-        .updateOne({ "groupName": req.params.groupName }, { $push: { "applicant": user._id } })
+        .updateOne({ "groupName": req.params.groupName }, { $push: { "applicants": user._id } })
         .exec(function (err, result) {
           if (err) res.status(500).send(err);
           res.status(200).send(result);
@@ -144,7 +144,7 @@ export function removeApplicantByGroupName(req, res) {
     .exec(function (err, user) {
       if (err) res.status(500).send(err);
       Groups
-        .updateOne({ "groupName": req.params.groupName }, { $pop: { "applicant": user._id } })
+        .updateOne({ "groupName": req.params.groupName }, { $pop: { "applicants": user._id } })
         .exec(function (err, result) {
           if (err) res.status(500).send(err);
           res.status(200).send(result);

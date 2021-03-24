@@ -75,5 +75,5 @@ export interface IGroupDataWithMembersAndApplicants extends Document {
     applicants: IUser[]
 };
 
-const Groups: mongoose.Model<IGroup> = mongoose.model("Groups", groupsSchema)
+const Groups = mongoose.model("Groups", groupsSchema)
 export default Groups
