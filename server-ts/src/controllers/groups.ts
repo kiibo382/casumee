@@ -19,7 +19,7 @@ export default {
     group.save(function (err) {
       if (err) res.status(500).send(err);
     });
-    Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
+    Users.findOne({ "userName": req.jwt.userName }, (err: any, user: IUser) => {
       if (err) res.status(500).send(err);
       if (!user) res.status(400).send("user not found");
       Groups.findOneAndUpdate({ "groupName": req.body.groupName }, { $push: { "members": user._id } })
@@ -133,7 +133,7 @@ export default {
     Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
       if (err) res.status(500).send(err);
       Groups
-        .updateOne({ "groupName": req.params.groupName }, { $pop: { "applicants": user._id } })
+        .updateOne({ "groupName": req.params.groupName }, { $pull: { applicants: user._id } })
         .exec(function (err, result) {
           if (err) res.status(500).send(err);
           res.status(200).send(result);

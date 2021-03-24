@@ -1,4 +1,4 @@
-import Users, { UserData } from "../models/users";
+import Users from "../models/users";
 import Express from "express"
 import { envConfig } from "../config/env.config";
 const secret = envConfig.jwt_secret;

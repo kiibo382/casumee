@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, ValidatorProps } from "mongoose";
 import validator from "validator";
 
 const carrerSchema: Schema = new Schema({
@@ -51,7 +51,7 @@ const userSchema: Schema = new Schema({
     required: true,
     validate: {
       validator: (v: string) => validator.isEmail(v),
-      message: (props) => `${props.value} is invalid email address`,
+      message: (props: ValidatorProps) => `${props.value} is invalid email address`,
     },
   },
   groupEmail: {
@@ -59,7 +59,7 @@ const userSchema: Schema = new Schema({
     unique: true,
     validate: {
       validator: (v: string) => validator.isEmail(v),
-      message: (props) => `${props.value} is invalid email address`,
+      message: (props: ValidatorProps) => `${props.value} is invalid email address`,
     },
   },
   password: {

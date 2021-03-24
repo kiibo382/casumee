@@ -1,4 +1,4 @@
-import usersModels, { UserData } from "../../models/users";
+import Users, { IUser } from "../../models/users";
 import crypto from "crypto";
 import Express from "express"
 
@@ -26,32 +26,33 @@ export default {
     }
   },
   isPasswordAndUserMatch: (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-    usersModels.findByEmail(req.body.email)
-      .then((user: UserData) => {
-        if (!user) {
-          res.status(404).send({});
+    Users
+      .findOne({ "email": req.body.email }), (err: any, user: IUser ) => {
+      if (err) res.status(500).send(err);
+      if (!user) {
+        res.status(404).send({});
+      } else {
+        const passwordFields = user.password.split("$");
+        const salt = passwordFields[0];
+        const hash = crypto
+          .createHmac("sha512", salt)
+          .update(req.body.password)
+          .digest("base64");
+        if (hash === passwordFields[1]) {
+          req.body = {
+            userId: user._id,
+            userName: user.userName,
+            email: user.email,
+            permissionLevel: user.permissionLevel,
+            provider: "email",
+            firstName: user.firstName,
+            lastName: user.lastName,
+          };
+          return next();
         } else {
-          const passwordFields = user.password.split("$");
-          const salt = passwordFields[0];
-          const hash = crypto
-            .createHmac("sha512", salt)
-            .update(req.body.password)
-            .digest("base64");
-          if (hash === passwordFields[1]) {
-            req.body = {
-              userId: user._id,
-              userName: user.userName,
-              email: user.email,
-              permissionLevel: user.permissionLevel,
-              provider: "email",
-              firstName: user.firstName,
-              lastName: user.lastName,
-            };
-            return next();
-          } else {
-            return res.status(400).send({ errors: ["Invalid e-mail or password"] });
-          }
+          return res.status(400).send({ errors: ["Invalid e-mail or password"] });
         }
-      });
+      }
+    }
   }
 }
