@@ -2,8 +2,6 @@ import jwt from "jsonwebtoken";
 import { envConfig } from "../../config/env.config";
 const secret = envConfig.jwt_secret;
 import crypto from "crypto";
-import pkg from "morgan";
-const { token } = pkg;
 import Express from "express"
 
 export default {

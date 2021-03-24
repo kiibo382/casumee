@@ -1,6 +1,8 @@
 import {
   insertUser,
   getSelf,
+  putSelf,
+  removeSelf,
   getUserList,
   login,
   logout,
@@ -53,19 +55,31 @@ router.get("/self", [
 router.put("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  putByUserName,
+  putSelf,
 ]);
 
 router.delete("/self", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
-  removeByUserName,
+  removeSelf,
 ]);
 
 router.get("/:userName", [
   validJWTNeeded,
   minimumPermissionLevelRequired(FREE),
   getByUserName,
+]);
+
+router.put("/:userName", [
+  validJWTNeeded,
+  minimumPermissionLevelRequired(ADMIN),
+  putByUserName,
+]);
+
+router.delete("/:userName", [
+  validJWTNeeded,
+  minimumPermissionLevelRequired(ADMIN),
+  removeByUserName,
 ]);
 
 export default router;

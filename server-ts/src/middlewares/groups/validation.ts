@@ -1,4 +1,4 @@
-import groupsModels, { GroupData } from "../../models/groups"
+import groupsModels, { IGroup } from "../../models/groups"
 import usersModels, { UserData } from "../../models/users"
 import Express from "express"
 

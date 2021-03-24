@@ -15,7 +15,7 @@ const carrerSchema: Schema = new Schema({
   contents: String,
 });
 
-const educationalBackgroundSchema = new Schema({
+const educationalBackgroundSchema: Schema = new Schema({
   schoolname: {
     type: String,
     required: true,
@@ -31,7 +31,7 @@ const educationalBackgroundSchema = new Schema({
   achivement: String,
 });
 
-const userSchema = new Schema({
+const userSchema: Schema = new Schema({
   userName: {
     type: String,
     unique: true,
@@ -77,7 +77,9 @@ const userSchema = new Schema({
   educationalBackground: [educationalBackgroundSchema],
 });
 
-export interface Carrer {
+userSchema.index({ userName: 1 }, { unique: true })
+
+export interface ICarrer extends Document {
   groupname: String
   firstDate: String
   lastDate: String
@@ -85,7 +87,7 @@ export interface Carrer {
   contents: String
 }
 
-export interface EducationalBackground {
+export interface IEducationalBackground extends Document {
   schoolname: String
   firstDate: String
   lastDate: String
@@ -95,7 +97,7 @@ export interface EducationalBackground {
   achivement: String
 }
 
-export interface UserData extends Document {
+export interface IUser extends Document {
   _id: Schema.Types.ObjectId
   userName: String
   firstName: String
@@ -107,60 +109,9 @@ export interface UserData extends Document {
   age: Number
   occupation: String
   permissionLevel: Number
-  carrer: Carrer[]
-  educationalBackground: EducationalBackground[]
+  carrer: ICarrer[]
+  educationalBackground: IEducationalBackground[]
 }
 
-export const Users = mongoose.model("Users", userSchema);
-
-export default {
-  findByEmail: (email: string) => {
-    try {
-      return Users.findOne({ "email": email })
-        .select(
-          "userName firstName lastName email groupEmail profile age occupation carrer educationalBackground"
-        )
-    } catch (e) {
-      return e
-    }
-  },
-  findByUserName: (userName: string) => {
-    try {
-      return Users.findOne({ "userName": userName })
-        .select(
-          "userName firstName lastName email groupEmail profile age occupation carrer educationalBackground"
-        )
-    } catch (e) {
-      return e
-    }
-  },
-  createUser: (userData: UserData) => {
-    const user = new Users(userData);
-    return user.save();
-  },
-  userList: (perPage: number, page: number) => {
-    return new Promise((resolve, reject) => {
-      Users.find()
-        .limit(perPage)
-        .skip(perPage * page)
-        .select("userName firstName lastName email groupEmail profile age occupation carrer educationalBackground")
-        .exec(function (err, users) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(users);
-          }
-        });
-    })
-  },
-  putUser: (userName: string, userData: UserData) => {
-    return Users.findOneAndUpdate({ "userName": userName }, userData);
-  },
-  removeUser: async (userName: string) => {
-    try {
-      return Users.deleteMany({ "userName": userName });
-    } catch (e) {
-      return e;
-    }
-  }
-}
+const Users: mongoose.Model<IUser> = mongoose.model("Users", userSchema);
+export default Users

@@ -15,45 +15,45 @@ const router = Express.Router();
 
 router.post("/", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupsController.registerGroup,
 ]);
 
 router.get("/", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupsController.getGroupList,
 ]);
 
 router.get("/:groupName", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupsController.getByGroupName,
 ]);
 
 router.put("/:groupName", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupVerify.isGroupMember,
     groupsController.putByGroupName,
 ]);
 
 router.delete("/:groupName", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupVerify.isGroupMember,
     groupsController.removeByGroupName,
 ]);
 
 router.get("/:groupName/members", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupsController.getMembersByGroupName,
 ]);
 
 router.post("/:groupName/members", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupsValidation.alreadyGroupMember,
     groupsController.addMemberByGroupName,
     groupsController.removeApplicantByGroupName
@@ -61,28 +61,28 @@ router.post("/:groupName/members", [
 
 router.delete("/:groupName/members", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupVerify.isGroupMember,
     groupsController.removeMemberByGroupName
 ]);
 
 router.post("/:groupName/applicants", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupsValidation.alreadyGroupMember,
     groupsController.addApplicantByGroupName
 ]);
 
 router.get("/:groupName/applicants", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupVerify.isGroupMember,
     groupsController.getApplicantsByGroupName
 ]);
 
 router.delete("/:groupName/applicants", [
     usersValidation.validJWTNeeded,
-    usersPermission.minimumPermissionLevelRequired(FREE),
+    usersPermission.checkPermissionLevel(FREE),
     groupVerify.isGroupMember,
     groupsController.removeApplicantByGroupName
 ]);

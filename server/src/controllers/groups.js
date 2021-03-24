@@ -16,10 +16,10 @@ export function registerGroup(req, res) {
   const group = new Groups(req.body);
   group.save(function (err) {
     if (err) res.status(500).send(err);
-    Staff.findOne({ "staffName": req.jwt.staffName })
-      .exec(function (err, staff) {
+    Users.findOne({ "userName": req.jwt.userName })
+      .exec(function (err, user) {
         if (err) res.status(500).send(err);
-        Groups.updateOne({ "groupName": req.body.groupName }, { $push: { "staff": staff._id } })
+        Groups.updateOne({ "groupName": req.body.groupName }, { $push: { "members": user._id } })
           .exec(function (err, result) {
             if (err) res.status(500).send(err);
             res.status(201).send(result);

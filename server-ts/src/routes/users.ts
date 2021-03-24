@@ -16,7 +16,7 @@ router.post("/", usersController.insertUser);
 
 router.get("/", [
   usersValidation.validJWTNeeded,
-  usersPermission.minimumPermissionLevelRequired(FREE),
+  usersPermission.checkPermissionLevel(FREE),
   usersController.getUserList,
 ]);
 
@@ -27,31 +27,31 @@ router.post("/login", [
 
 router.post("/logout", [
   usersValidation.validJWTNeeded,
-  usersPermission.minimumPermissionLevelRequired(FREE),
+  usersPermission.checkPermissionLevel(FREE),
   usersController.logout,
 ]);
 
 router.get("/self", [
   usersValidation.validJWTNeeded,
-  usersPermission.minimumPermissionLevelRequired(FREE),
+  usersPermission.checkPermissionLevel(FREE),
   usersController.getSelf,
 ]);
 
 router.put("/self", [
   usersValidation.validJWTNeeded,
-  usersPermission.minimumPermissionLevelRequired(FREE),
+  usersPermission.checkPermissionLevel(FREE),
   usersController.putByUserName,
 ]);
 
 router.delete("/self", [
   usersValidation.validJWTNeeded,
-  usersPermission.minimumPermissionLevelRequired(FREE),
+  usersPermission.checkPermissionLevel(FREE),
   usersController.removeByUserName,
 ]);
 
 router.get("/:userName", [
   usersValidation.validJWTNeeded,
-  usersPermission.minimumPermissionLevelRequired(FREE),
+  usersPermission.checkPermissionLevel(FREE),
   usersController.getByUserName,
 ]);
 

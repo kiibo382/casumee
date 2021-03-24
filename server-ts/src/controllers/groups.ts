@@ -1,4 +1,5 @@
-import groupsModels from "../models/groups";
+import Users, { IUser } from "../models/users"
+import Groups, { IGroup } from "../models/groups";
 import { envConfig } from "../config/env.config";
 const secret = envConfig.jwt_secret;
 import crypto from "crypto";
@@ -14,21 +15,16 @@ export default {
         .digest("base64");
       req.body.password = salt + "$" + hash;
     }
-    try {
-      groupsModels.createGroup(req.body)
-        .catch((err) => {
-          res.status(500).send(err)
-        })
-    } catch (err) {
-      res.status(500).send(err)
-    }
-    groupsModels.addMember(req.body.groupName, req.jwt.userName)
-      .then(() => {
-        res.status(201).send();
-      })
-      .catch((err) => {
-        res.status(500).send(err)
-      })
+    const group = new Groups(req.body);
+    group.save(function (err) {
+      if (err) res.status(500).send(err);
+    });
+    Users.findOne({ "userName": req.jwt.staffName }, (err: any, user: IUser) => {
+      if (err) res.status(500).send(err);
+      if (!user) res.status(400).send("user not found");
+      await group = Groups.findOneAndUpdate({ "groupName": req.body.groupName }, { $push: { "members": user._id } })
+    })
+    res.status(201).send();
   },
   getGroupList: (req: Express.Request, res: Express.Response) => {
     const limit: number = 100

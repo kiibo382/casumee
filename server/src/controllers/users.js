@@ -20,19 +20,10 @@ export function insertUser(req, res) {
 }
 
 export function getUserList(req, res) {
-  const limit =
-    req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
-  const page = 0;
-  if (req.query) {
-    if (req.query.page) {
-      req.query.page = parseInt(req.query.page);
-      page = Number.isInteger(req.query.page) ? req.query.page : 0;
-    }
-  }
+  const limit = 100;
   Users
     .find()
     .limit(limit)
-    .skip(page)
     .select("userName firstName lastName email profile age gender sns")
     .exec(function (err, result) {
       if (err) res.status(500).send(err);
@@ -41,22 +32,18 @@ export function getUserList(req, res) {
 }
 
 export function login(req, res) {
-  try {
-    const refreshId = req.body.email + secret;
-    const salt = crypto.randomBytes(16).toString("base64");
-    const hash = crypto
-      .createHmac("sha512", salt)
-      .update(refreshId)
-      .digest("base64");
-    req.body.refreshKey = salt;
-    const token = jsonwebtoken.sign(req.body, secret);
-    const b = Buffer.from(hash);
-    const refresh_token = b.toString("base64");
-    req.session.token = `Bearer ${token}`;
-    res.status(200).send();
-  } catch (err) {
-    res.status(500).send({ errors: err });
-  }
+  const refreshId = req.body.email + secret;
+  const salt = crypto.randomBytes(16).toString("base64");
+  const hash = crypto
+    .createHmac("sha512", salt)
+    .update(refreshId)
+    .digest("base64");
+  req.body.refreshKey = salt;
+  const token = jsonwebtoken.sign(req.body, secret);
+  const b = Buffer.from(hash);
+  const refresh_token = b.toString("base64");
+  req.session.token = `Bearer ${token}`;
+  res.status(200).send({ "refresh_token": refresh_token });
 }
 
 export function logout(req, res) {
@@ -77,6 +64,34 @@ export function getSelf(req, res) {
     .exec(function (err, result) {
       if (err) res.status(500).send(err);
       res.status(200).send(result);
+    })
+}
+
+export function putSelf(req, res) {
+  if (req.body.password) {
+    const salt = crypto.randomBytes(16).toString("base64");
+    const hash = crypto
+      .createHmac("sha512", salt)
+      .update(req.body.password)
+      .digest("base64");
+    req.body.password = salt + "$" + hash;
+  }
+
+  Users
+    .findOneAndUpdate({ "userName": req.jwt.userName }, req.body)
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      res.status(200).send(result);
+    })
+}
+
+export function removeSelf(req, res) {
+  Users
+    .deleteOne({ "userName": req.jwt.userName })
+    .exec(function (err, result) {
+      if (err) res.status(500).send(err);
+      req.session.token = "";
+      res.status(204).send(result);
     })
 }
 
@@ -103,7 +118,7 @@ export function putByUserName(req, res) {
   }
 
   Users
-    .findOneAndUpdate({ "userName": req.jwt.userName }, req.body)
+    .findOneAndUpdate({ "userName": req.params.userName }, req.body)
     .exec(function (err, result) {
       if (err) res.status(500).send(err);
       res.status(200).send(result);
@@ -112,7 +127,7 @@ export function putByUserName(req, res) {
 
 export function removeByUserName(req, res) {
   Users
-    .deleteOne({ "userName": userName })
+    .deleteOne({ "userName": req.params.userName })
     .exec(function (err, result) {
       if (err) res.status(500).send(err);
       req.session.token = "";
