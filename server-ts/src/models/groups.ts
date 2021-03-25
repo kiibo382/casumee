@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-import usersModels, { IUser } from "./users"
+import mongoose, { Schema, Document, ModelOptions } from "mongoose";
+import { IUser } from "./users"
 
 
 const urlsSchema: Schema = new Schema({
@@ -51,7 +51,7 @@ export interface IGroup extends Document {
     groupName: String
     emailDomain: String
     password: String
-    urls: [IUrls]
+    urls: [IUser]
     intern: Boolean
     newCareer: Boolean
     midCareer: Boolean
@@ -61,7 +61,7 @@ export interface IGroup extends Document {
     applicants: [Schema.Types.ObjectId]
 };
 
-export interface IGroupDataWithMembersAndApplicants extends Document {
+export interface IGroupWithMembersAndApplicants extends Document {
     groupName: String
     emailDomain: String
     password: String
@@ -71,9 +71,9 @@ export interface IGroupDataWithMembersAndApplicants extends Document {
     midCareer: Boolean
     industry: String
     profile: String
-    members: IUser[]
-    applicants: IUser[]
+    members: [IUser]
+    applicants: [IUser]
 };
 
-const Groups = mongoose.model("Groups", groupsSchema)
+const Groups = mongoose.model<IGroup>("Groups", groupsSchema)
 export default Groups

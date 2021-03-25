@@ -26,6 +26,7 @@ export default {
       return res.status(400).send({ error: "Invalid refresh token" });
     }
   },
+
   validJWTNeeded: (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
     if (req.session.token) {
       var bearerToken: string = req.session.token;

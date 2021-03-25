@@ -25,6 +25,13 @@ router.get("/", [
     groupsController.getGroupList,
 ]);
 
+router.get("/:groupName/admin", [
+    usersValidation.validJWTNeeded,
+    usersPermission.checkPermissionLevel(FREE),
+    groupVerify.isGroupMember,
+    groupsController.getByGroupName,
+]);
+
 router.get("/:groupName", [
     usersValidation.validJWTNeeded,
     usersPermission.checkPermissionLevel(FREE),

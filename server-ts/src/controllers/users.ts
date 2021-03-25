@@ -1,9 +1,13 @@
-import Users from "../models/users";
+import Users, { IUser } from "../models/users";
 import Express from "express"
 import { envConfig } from "../config/env.config";
 const secret = envConfig.jwt_secret;
 import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
+import log4js from 'log4js';
+
+let logger = log4js.getLogger();
+logger.level = 'debug';
 
 export default {
   insertUser: (req: Express.Request, res: Express.Response) => {
@@ -27,13 +31,15 @@ export default {
       .find()
       .limit(limit)
       .select("userName firstName lastName email profile age gender sns")
-      .exec(function (err, result) {
+      .exec(function (err, result: IUser[] | null) {
         if (err) res.status(500).send(err);
+        if (!result) res.status(404).send("user list not found");
         res.status(200).send(result);
       })
   },
 
   login: (req: Express.Request, res: Express.Response) => {
+    logger.debug("login cotrlloer")
     const refreshId = req.body.email + secret;
     const salt = crypto.randomBytes(16).toString("base64");
     const hash = crypto
@@ -63,8 +69,9 @@ export default {
       .select(
         "userName firstName lastName email profile age gender sns"
       )
-      .exec(function (err, result) {
+      .exec(function (err: any, result: IUser | null) {
         if (err) res.status(500).send(err);
+        if (result) res.status(404).send("user not found");
         res.status(200).send(result);
       })
   },
@@ -79,20 +86,20 @@ export default {
       req.body.password = salt + "$" + hash;
     }
     Users
-      .findOneAndUpdate({ "userName": req.jwt.userName }, req.body)
-      .exec(function (err, result) {
+      .updateOne({ "userName": req.jwt.userName }, req.body)
+      .exec(function (err) {
         if (err) res.status(500).send(err);
-        res.status(200).send(result);
+        res.status(200).send();
       })
   },
 
   removeSelf: (req: Express.Request, res: Express.Response) => {
     Users
       .deleteOne({ "userName": req.jwt.userName })
-      .exec(function (err, result) {
+      .exec(function (err) {
         if (err) res.status(500).send(err);
         req.session.token = "";
-        res.status(204).send(result);
+        res.status(204).send();
       })
   },
 
@@ -102,8 +109,9 @@ export default {
       .select(
         "userName firstName lastName email profile age gender sns"
       )
-      .exec(function (err, result) {
+      .exec(function (err, result: IUser | null) {
         if (err) res.status(500).send(err);
+        if (!result) res.status(404).send("user not found");
         res.status(200).send(result);
       })
   },
@@ -118,20 +126,20 @@ export default {
       req.body.password = salt + "$" + hash;
     }
     Users
-      .findOneAndUpdate({ "userName": req.params.userName }, req.body)
-      .exec(function (err, result) {
+      .updateOne({ "userName": req.params.userName }, req.body)
+      .exec(function (err) {
         if (err) res.status(500).send(err);
-        res.status(200).send(result);
+        res.status(200).send();
       })
   },
 
   removeByUserName: (req: Express.Request, res: Express.Response) => {
     Users
       .deleteOne({ "userName": req.params.userName })
-      .exec(function (err, result) {
+      .exec(function (err) {
         if (err) res.status(500).send(err);
         req.session.token = "";
-        res.status(204).send(result);
+        res.status(204).send();
       })
   }
 }
