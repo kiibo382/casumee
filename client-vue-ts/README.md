@@ -1,4 +1,4 @@
-# client-vue-ts
+# client
 
 ## Build Setup
 
