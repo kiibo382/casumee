@@ -1,3 +1,4 @@
 .vscode/
 .circleci/
 node_modules
+/server

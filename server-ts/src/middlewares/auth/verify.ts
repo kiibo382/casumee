@@ -1,35 +1,29 @@
-import usersModels, { UserData } from "../../models/users";
+import Users, { IUser } from "../../models/users";
 import crypto from "crypto";
 import Express from "express"
+import log4js from 'log4js';
 
+let logger = log4js.getLogger();
+logger.level = 'debug';
 
 export default {
   hasAuthValidFields: (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-    const errors = [];
-    if (req.body) {
-      if (!req.body.email) {
-        errors.push("Missing email field");
-      }
-      if (!req.body.password) {
-        errors.push("Missing password field");
-      }
-
-      if (errors.length) {
-        return res.status(400).send({ errors: errors.join(",") });
-      } else {
-        return next();
-      }
-    } else {
+    if (!req.body.email || !req.body.password) {
       return res
         .status(400)
         .send({ errors: "Missing email and password fields" });
+    } else {
+      return next()
     }
   },
   isPasswordAndUserMatch: (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-    usersModels.findByEmail(req.body.email)
-      .then((user: UserData) => {
+    Users
+      .findOne({ "email": req.body.email })
+      .exec(function (err: any, user: IUser | null) {
+        if (err)
+          res.status(500).send(err);
         if (!user) {
-          res.status(404).send({});
+          res.status(404).send({ errors: "Invalid e-mail or password" });
         } else {
           const passwordFields = user.password.split("$");
           const salt = passwordFields[0];
@@ -49,9 +43,9 @@ export default {
             };
             return next();
           } else {
-            return res.status(400).send({ errors: ["Invalid e-mail or password"] });
+            return res.status(400).send({ errors: "Invalid e-mail or password" });
           }
         }
-      });
+      })
   }
 }
