@@ -57,6 +57,6 @@ if (process.env.NODE_ENV === "production") {
 }
 app.use(session(sess));
 
-app.use('/', router)
+app.use('/api', router)
 
 export default app;

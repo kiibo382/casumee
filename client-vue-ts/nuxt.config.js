@@ -36,16 +36,50 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/auth-next'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    baseURL: 'http:localhost:8080/api'
+  },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en',
+      lang: 'ja',
     },
+  },
+
+  auth: {
+    redirect: {
+      login: '/users/login', 
+      logout: '/users/logout',
+      callback: false,
+      home: '/'
+    },
+    strategies: {
+      local: {
+        token: {
+          property: 'token',
+          required: true,
+          type: 'Bearer'
+        },
+        user: {
+          property: 'user',
+          // autoFetch: true
+        },
+        endpoints: {
+          login: { url: '/users/login', method: 'post', propertyName: false },
+          logout: { url: '/users/logout', method: 'post', propertyName: false },
+          user: { url: '/users/self', method: 'get', propertyName: false }
+        }
+      }
+    }  
+  },
+
+  router: {
+    middleware: ['auth']
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
