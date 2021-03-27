@@ -7,9 +7,13 @@ dev-init:
 prd-init:
 	npm install --production
 
-.PHONY: build-local
-build-local:
+.PHONY: build-docker-local
+build-docker-local:
 	docker-compose -f docker-compose.local.yml build 
+
+.PHONY: build-ts
+build-ts:
+	npm run build 
 
 .PHONY: run-local-db
 run-local-db:
@@ -23,8 +27,8 @@ run-local-server:
 cleanup-local:
 	docker-compose -f docker-compose.local.yml down
 
-.PHONY: build-stg
-build-stg:
+.PHONY: build-docker-stg
+build-docker-stg:
 	docker-compose build 
 
 .PHONY: run-stg
@@ -35,8 +39,8 @@ run-stg:
 cleanup-stg:
 	docker-compose down
 
-.PHONY: build-prd
-build-prd:
+.PHONY: build-docker-prd
+build-docker-prd:
 	docker-compose build 
 
 .PHONY: run-prd

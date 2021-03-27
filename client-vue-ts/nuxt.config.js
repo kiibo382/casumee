@@ -53,7 +53,7 @@ export default {
 
   auth: {
     redirect: {
-      login: '/users/login', 
+      login: '/users/signup',
       logout: '/users/logout',
       callback: false,
       home: '/'
@@ -70,12 +70,12 @@ export default {
           // autoFetch: true
         },
         endpoints: {
-          login: { url: '/users/login', method: 'post', propertyName: false },
+          login: { url: '/users/signup', method: 'post', propertyName: false },
           logout: { url: '/users/logout', method: 'post', propertyName: false },
           user: { url: '/users/self', method: 'get', propertyName: false }
         }
       }
-    }  
+    }
   },
 
   router: {
