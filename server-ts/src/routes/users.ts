@@ -1,5 +1,4 @@
 import usersController from "../controllers/users";
-import authVerify from "../middlewares/auth/verify";
 import usersPermission from "../middlewares/users/permission";
 import usersValidation from "../middlewares/users/validation";
 import { envConfig } from "../config/env.config.js";
@@ -18,17 +17,6 @@ router.get("/", [
   usersValidation.validJWTNeeded,
   usersPermission.checkPermissionLevel(FREE),
   usersController.getUserList,
-]);
-
-router.post("/login", [
-  authVerify.hasAuthValidFields,
-  authVerify.isPasswordAndUserMatch,
-  usersController.login]);
-
-router.post("/logout", [
-  usersValidation.validJWTNeeded,
-  usersPermission.checkPermissionLevel(FREE),
-  usersController.logout,
 ]);
 
 router.get("/self", [

@@ -9,10 +9,8 @@ import connectRedis from "connect-redis";
 import cors from 'cors'
 import { connectWithRetry } from "./config/mongoose"
 import log4js from 'log4js';
+import { log4jsConfig } from './config/log4js.config'
 
-let logger = log4js.getLogger();
-logger.level = 'debug';
-logger.debug("My Debug message");
 
 declare module 'express-session' {
   interface SessionData {
@@ -27,7 +25,11 @@ connectWithRetry()
 
 const app = Express()
 
-app.use(log4js.connectLogger(logger, { level: process.env.LOG_LEVEL || 'debug' }));
+// access logger
+log4js.configure(log4jsConfig);
+const accessLogger = log4js.getLogger('access');
+app.use(log4js.connectLogger(accessLogger, { level: process.env.LOG_LEVEL || 'debug' }));
+
 app.use(cors())
 app.use(cookieParser());
 app.set('view engine', 'ejs')
@@ -36,7 +38,6 @@ app.use(layouts)
 app.use(Express.static(__dirname + '/public'))
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: false }));
-
 
 const sess: session.SessionOptions = {
   secret: "secret_key",
@@ -47,7 +48,7 @@ const sess: session.SessionOptions = {
   }),
   cookie: {
     httpOnly: true,
-    secure: (process.env.NODE_ENV === "production") ? true: false,
+    secure: (process.env.NODE_ENV === "production") ? true : false,
     maxAge: 1000 * 60 * 30,
     sameSite: "lax",
   },
@@ -57,6 +58,6 @@ if (process.env.NODE_ENV === "production") {
 }
 app.use(session(sess));
 
-app.use('/', router)
+app.use('/api/v1', router)
 
 export default app;

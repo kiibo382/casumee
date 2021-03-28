@@ -40,8 +40,6 @@ const groupsSchema: Schema = new Schema({
     applicants: [{ type: Schema.Types.ObjectId, ref: 'Users' }]
 });
 
-groupsSchema.index({ groupName: 1 }, { unique: true })
-
 export interface IUrls extends Document {
     name: String
     url: String

@@ -32,35 +32,10 @@ export default {
       .limit(limit)
       .select("userName firstName lastName email profile age gender sns")
       .exec(function (err, result: IUser[] | null) {
-        if (err) res.status(500).send(err);
-        if (!result) res.status(404).send("user list not found");
-        res.status(200).send(result);
+        if (err) res.status(500).json({ "error": { "msg": err } });
+        if (!result) res.status(404).json({ "error": { "msg": "users not found" } });
+        res.status(200).json(result);
       })
-  },
-
-  login: (req: Express.Request, res: Express.Response) => {
-    logger.debug("login cotrlloer")
-    const refreshId = req.body.email + secret;
-    const salt = crypto.randomBytes(16).toString("base64");
-    const hash = crypto
-      .createHmac("sha512", salt)
-      .update(refreshId)
-      .digest("base64");
-    req.body.refreshKey = salt;
-    const token: string = jsonwebtoken.sign(req.body, secret);
-    const b = Buffer.from(hash);
-    const refresh_token: string = b.toString("base64");
-    req.session.token = `Bearer ${token}`;
-    res.status(200).send();
-  },
-
-  logout: (req: Express.Request, res: Express.Response) => {
-    if (req.session.token) {
-      req.session.token = "";
-      res.status(200).send();
-    } else {
-      return res.status(401).send();
-    }
   },
 
   getSelf: (req: Express.Request, res: Express.Response) => {
@@ -70,9 +45,9 @@ export default {
         "userName firstName lastName email profile age gender sns"
       )
       .exec(function (err: any, result: IUser | null) {
-        if (err) res.status(500).send(err);
-        if (result) res.status(404).send("user not found");
-        res.status(200).send(result);
+        if (err) res.status(500).json({ "error": { "msg": err } });
+        if (!result) res.status(404).json({ "error": { "msg": "user not found" } });
+        res.status(200).json(result);
       })
   },
 

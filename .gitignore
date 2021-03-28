@@ -2,3 +2,4 @@
 .circleci/
 node_modules
 /server
+/backup

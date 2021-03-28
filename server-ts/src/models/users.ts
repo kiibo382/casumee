@@ -77,8 +77,6 @@ const userSchema: Schema = new Schema({
   educationalBackground: [educationalBackgroundSchema],
 });
 
-userSchema.index({ userName: 1 }, { unique: true })
-
 export interface ICarrer extends Document {
   groupname: String
   firstDate: String
