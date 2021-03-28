@@ -3,6 +3,10 @@ const secret = envConfig.jwt_secret;
 import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
 import Express from "express"
+import log4js from 'log4js';
+
+let logger = log4js.getLogger();
+logger.level = 'debug';
 
 export default {
   returnToken: (req: Express.Request, res: Express.Response) => {
@@ -17,16 +21,7 @@ export default {
       const token = jsonwebtoken.sign(req.body, secret);
       const b = Buffer.from(hash);
       const refresh_token = b.toString("base64");
-      res.status(201).send({ accessToken: token, refreshToken: refresh_token });
-    } catch (err) {
-      res.status(500).send({ errors: err });
-    }
-  },
-  refresh_token: (req: Express.Request, res: Express.Response) => {
-    try {
-      req.body = req.jwt;
-      const token = jsonwebtoken.sign(req.body, secret);
-      res.status(201).send({ id: token });
+      res.status(201).send({ access_token: token, token_type: "bearer", refresh_oken: refresh_token });
     } catch (err) {
       res.status(500).send({ errors: err });
     }

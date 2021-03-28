@@ -30,12 +30,6 @@ log4js.configure(log4jsConfig);
 const accessLogger = log4js.getLogger('access');
 app.use(log4js.connectLogger(accessLogger, { level: process.env.LOG_LEVEL || 'debug' }));
 
-// default logger
-// let logger = log4js.getLogger();
-// logger.level = 'debug';
-// logger.debug("My Debug message");
-// app.use(log4js.connectLogger(logger, { level: process.env.LOG_LEVEL || 'debug' }));
-
 app.use(cors())
 app.use(cookieParser());
 app.set('view engine', 'ejs')
@@ -64,6 +58,6 @@ if (process.env.NODE_ENV === "production") {
 }
 app.use(session(sess));
 
-app.use('/api', router)
+app.use('/api/v1', router)
 
 export default app;

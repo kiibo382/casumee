@@ -1,5 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 
+require('dotenv').config();
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -41,7 +43,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http:localhost:8080/api'
+    baseURL: process.env.API_URL
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
@@ -53,27 +55,29 @@ export default {
 
   auth: {
     redirect: {
-      login: '/users/signup',
-      logout: '/users/logout',
+      login: '/users/login',
+      logout: '/users/login',
       callback: false,
       home: '/'
     },
+    localStorage: false,
     strategies: {
       local: {
         token: {
-          property: 'token',
-          required: true,
-          type: 'Bearer'
+          property: 'access_token',
         },
         user: {
-          property: 'user',
-          // autoFetch: true
+          property: '',
         },
         endpoints: {
-          login: { url: '/users/signup', method: 'post', propertyName: false },
-          logout: { url: '/users/logout', method: 'post', propertyName: false },
-          user: { url: '/users/self', method: 'get', propertyName: false }
+          login: { url: '/auth', method: 'post' },
+          logout: false,
+          user: { url: '/users/self', method: 'get' }
         }
+      },
+      github: {
+        clientId: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET
       }
     }
   },

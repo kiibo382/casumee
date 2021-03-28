@@ -1,6 +1,9 @@
 <template>
   <div class="mt-3">
     <v-card class="mt-5 mx-auto" max-width="600">
+      <v-btn block class="mr-4 blue white--text" @click="githubLogin">
+        Login
+      </v-btn>
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-container>
           <v-row justify="center">
@@ -45,22 +48,22 @@ export default {
     }
   },
   methods: {
+    githubLogin() {
+      this.$auth.loginWith("github");
+    },
     async userLogin() {
-      await this.$auth
-        .loginWith('local', {
+      try {
+        await this.$auth.loginWith('local', {
           data: {
             email: this.email,
             password: this.password,
           },
         })
-        .then(
-          (response) => {
-            return response
-          },
-          (error) => {
-            return error
-          }
-        )
+        this.$router.replace({ path: '/' })
+      } catch (error) {
+        console.log(error)
+        window.alert('ログインに失敗しました。再実行してください。')
+      }
     },
   },
 }

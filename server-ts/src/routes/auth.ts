@@ -5,10 +5,10 @@ import usersValidation from "../middlewares/users/validation";
 import Express from "express";
 const router: Express.Router = Express.Router();
 
-router.post("/",
-  [authVerify.hasAuthValidFields,
-    authVerify.isPasswordAndUserMatch,
-    authController.returnToken
+router.post("/", [
+  authVerify.hasAuthValidFields,
+  authVerify.isPasswordAndUserMatch,
+  authController.returnToken
 ]);
 
 router.post("/refresh", [
