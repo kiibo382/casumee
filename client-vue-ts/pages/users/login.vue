@@ -1,9 +1,6 @@
 <template>
   <div class="mt-3">
     <v-card class="mt-5 mx-auto" max-width="600">
-      <v-btn block class="mr-4 blue white--text" @click="githubLogin">
-        GithubLogin
-      </v-btn>
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-container>
           <v-row justify="center">
@@ -11,14 +8,14 @@
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
-              <v-text-field v-model="email" label="email" />
+              <v-text-field v-model="form.email" label="email" />
               <p class="caption mb-0" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
               <v-text-field
-                v-model="password"
+                v-model="form.password"
                 type="password"
                 label="password"
               />
@@ -43,21 +40,17 @@ export default {
   data() {
     return {
       valid: false,
-      password: '',
-      email: '',
+      form: {
+        password: '',
+        email: '',
+      },
     }
   },
   methods: {
-    githubLogin() {
-      this.$auth.loginWith("github");
-    },
     async userLogin() {
       try {
         await this.$auth.loginWith('local', {
-          data: {
-            email: this.email,
-            password: this.password,
-          },
+          data: this.form,
         })
         this.$router.replace({ path: '/' })
       } catch (error) {

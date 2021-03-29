@@ -8,32 +8,32 @@
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
-              <v-text-field v-model="userName" label="user name" />
+              <v-text-field v-model="form.userName" label="user name" />
               <p class="caption mb-0" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
-              <v-text-field v-model="firstName" label="first name" />
+              <v-text-field v-model="form.firstName" label="first name" />
               <p class="caption mb-0" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
-              <v-text-field v-model="lastName" label="last name" />
+              <v-text-field v-model="form.lastName" label="last name" />
               <p class="caption mb-0" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
-              <v-text-field v-model="email" label="email" />
+              <v-text-field v-model="form.email" label="email" />
               <p class="caption mb-0" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="10" sm="10">
               <v-text-field
-                v-model="password"
+                v-model="form.password"
                 type="password"
                 label="password"
               />
@@ -58,23 +58,19 @@ export default {
   data() {
     return {
       valid: false,
-      userName: '',
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
+      form: {
+        userName: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+      },
     }
   },
   methods: {
     async userSignup() {
       try {
-        await this.$axios.post('/users', {
-          userName: this.userName,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          email: this.email,
-          password: this.password,
-        })
+        await this.$axios.post('/users', this.form)
       } catch (error) {
         window.alert("サインアップに失敗しました。再実行してください。")
         return;
