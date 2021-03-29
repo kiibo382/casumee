@@ -2,7 +2,6 @@ import Users, { IUser } from "../models/users";
 import Express from "express"
 import { envConfig } from "../config/env.config";
 const secret = envConfig.jwt_secret;
-import jsonwebtoken from "jsonwebtoken";
 import crypto from "crypto";
 import log4js from 'log4js';
 
@@ -73,7 +72,6 @@ export default {
       .deleteOne({ "userName": req.jwt.userName })
       .exec(function (err) {
         if (err) res.status(500).send(err);
-        req.session.token = "";
         res.status(204).send();
       })
   },
@@ -113,7 +111,6 @@ export default {
       .deleteOne({ "userName": req.params.userName })
       .exec(function (err) {
         if (err) res.status(500).send(err);
-        req.session.token = "";
         res.status(204).send();
       })
   }

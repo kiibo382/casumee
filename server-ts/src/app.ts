@@ -10,16 +10,12 @@ import cors from 'cors'
 import { connectWithRetry } from "./config/mongoose"
 import log4js from 'log4js';
 import { log4jsConfig } from './config/log4js.config'
+import * as dotenv from "dotenv";
 
-
-declare module 'express-session' {
-  interface SessionData {
-    token: null | string;
-  }
-}
+dotenv.config();
 
 const RedisStore = connectRedis(session);
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({ host: process.env.REDIS_HOST });
 
 connectWithRetry()
 

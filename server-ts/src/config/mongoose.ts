@@ -1,5 +1,7 @@
-import { dbConfig } from "./db.config"
 import mongoose from "mongoose";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const options = {
     autoIndex: false,
@@ -13,7 +15,7 @@ export function connectWithRetry() {
     console.log("MongoDB connection with retry");
     mongoose
         .connect(
-            `mongodb://${dbConfig.DB_USER}:${dbConfig.DB_PASS}@${dbConfig.HOST}:${dbConfig.DB_PORT}/${dbConfig.DB_NAME}`,
+            `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
             options
         )
         .then(() => {
