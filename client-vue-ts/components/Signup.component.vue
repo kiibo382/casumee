@@ -76,8 +76,8 @@ export default {
           password: this.password,
         })
       } catch (error) {
-        console.log(error)
         window.alert("サインアップに失敗しました。再実行してください。")
+        return;
       }
       try {
         await this.$auth
@@ -90,7 +90,6 @@ export default {
           window.alert("ログイン成功！")
           this.$router.replace({ path: '/' });
       } catch(error) {
-        console.log(error)
         window.alert("ログインに失敗しました。再実行してください。")
       }
     },

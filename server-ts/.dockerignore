@@ -1,4 +1,6 @@
-node_modules
 *.yml
 *.txt
 /data
+/log
+Makefile
+README.md

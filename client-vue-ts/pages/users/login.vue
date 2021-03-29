@@ -2,7 +2,7 @@
   <div class="mt-3">
     <v-card class="mt-5 mx-auto" max-width="600">
       <v-btn block class="mr-4 blue white--text" @click="githubLogin">
-        Login
+        GithubLogin
       </v-btn>
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-container>
