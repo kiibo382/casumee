@@ -38,7 +38,8 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    '@nuxtjs/auth-next'
+    '@nuxtjs/auth-next',
+    'nuxt-socket-io'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -74,16 +75,24 @@ export default {
           logout: false,
           user: { url: '/users/self', method: 'get' }
         }
-      },
-      github: {
-        clientId: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET
       }
     }
   },
 
   router: {
     middleware: ['auth']
+  },
+
+  io: {
+    sockets: [
+      {
+        name: 'home',
+        url: 'http://localhost:8080',
+        default: true,
+        vuex: {},
+        namespaces: {}
+      }
+    ]
   },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
