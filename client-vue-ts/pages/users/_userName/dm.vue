@@ -1,5 +1,6 @@
 <template>
   <section class="section">
+    <hr />
     <article
       class="media"
       v-for="(chatData, index) in chatDataList"
@@ -8,7 +9,6 @@
       <div class="media-content">
         <div class="content">
           <p>
-            <strong>socket id: {{ chatData.socketId }}</strong>
             <br />
             <NuxtLink :to="`/users/${chatData.userName}`"> User page </NuxtLink>
             <br />
@@ -19,6 +19,7 @@
           </p>
         </div>
       </div>
+      <hr />
     </article>
     <div class="field">
       <div class="control">
@@ -49,25 +50,35 @@ export default {
       msg: '',
       chatDataList: [],
       socket: null,
+      pastChatData: [],
     }
+  },
+  async fetch({ $route, $auth, $axios }) {
+    const userArray = [$route.params.userName, $auth.user.userName].sort()
+    const chatName = `${userArray[0]}${userArray[1]}`
+    this.pastChatData = await $axios
+      .$get(`/chat/${chatName}`)
+      .then((res) => res.json())
   },
   mounted() {
     this.socket = this.$nuxtSocket({
       name: 'home',
-      channel: '/',
-      reconnection: false,
+      channel: 'dms',
+      reconnection: true,
+      persist: true,
     })
     this.socket.on('new-chat-data', (chatData) => {
       this.chatDataList.push(chatData)
     })
   },
   methods: {
-    sendMessage() {
+    sendMessage({ $route, $auth }) {
       this.msg = this.msg.trim()
       if (this.msg) {
         this.socket.emit('send-chat-data', {
           socketId: this.socket.id,
-          userName: this.$auth.user.userName,
+          users: [$route.params.userName, $auth.user.userName],
+          userName: $auth.user.userName,
           msg: this.msg,
         })
         this.msg = ''
