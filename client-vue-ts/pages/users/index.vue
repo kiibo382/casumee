@@ -1,14 +1,16 @@
 <template>
-  <div class="users">
-    <hr />
-    <ul v-for="userData in usersData">
-      <h3>user name: {{ userData.userName }}</h3>
-      <li>email: {{ userData.email }}</li>
-      <li>first name: {{ userData.firstName }}</li>
-      <li>last name: {{ userData.lastName }}</li>
-      <hr />
-    </ul>
-  </div>
+  <v-row>
+    <v-col v-for="(userData, index) in usersData" :key="index" cols="4">
+      <v-card height="200">
+        <v-card-title>user name: {{ userData.userName }}</v-card-title>
+        <v-card-text>
+          email: {{ userData.email }}<br />
+          first name: {{ userData.firstName }}<br />
+          last name: {{ userData.lastName }}
+        </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 <script>
 export default {

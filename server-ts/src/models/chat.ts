@@ -1,22 +1,18 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 const chatSchema: Schema = new Schema({
-    socketId: {
+    chatName: {
         type: String,
-        unique: true,
         required: true,
     },
-    userName: {
-        type: String
-    },
-    msg: {
-        type: String
-    },
+    userName: String,
+    msg: String
 });
 
 export interface IChat extends Document {
     _id: Schema.Types.ObjectId
-    socketId: String
+    chatName: String
+    userName: String
     msg: String
 }
 

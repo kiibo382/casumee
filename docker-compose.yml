@@ -1,11 +1,11 @@
 version: "3.7"
 services:
-  node:
+  api:
     build:
-      context: .
+      context: ./server-ts
       dockerfile: ./Dockerfile
     volumes:
-      - ./node_modules:/node_modules
+      - ./server-ts/node_modules:/app/node_modules
     ports:
       - 8080:8080
     depends_on:

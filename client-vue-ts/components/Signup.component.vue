@@ -72,21 +72,20 @@ export default {
       try {
         await this.$axios.post('/users', this.form)
       } catch (error) {
-        window.alert("サインアップに失敗しました。再実行してください。")
-        return;
+        window.alert('サインアップに失敗しました。再実行してください。')
+        return
       }
       try {
-        await this.$auth
-          .loginWith('local', {
-            data: {
-              email: this.email,
-              password: this.password,
-            },
-          })
-          window.alert("ログイン成功！")
-          this.$router.replace({ path: '/' });
-      } catch(error) {
-        window.alert("ログインに失敗しました。再実行してください。")
+        await this.$auth.loginWith('local', {
+          data: {
+            email: this.form.email,
+            password: this.form.password,
+          },
+        })
+        window.alert('ログイン成功！')
+        this.$router.replace({ path: '/' })
+      } catch (error) {
+        window.alert('ログインに失敗しました。再実行してください。')
       }
     },
   },
