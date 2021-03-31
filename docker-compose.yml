@@ -1,11 +1,17 @@
-version: "3.7"
+version: "3.9"
 services:
+  client:
+    build:
+      context: ./client-vue-ts
+      dockerfile: ./Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
   api:
     build:
       context: ./server-ts
       dockerfile: ./Dockerfile
-    volumes:
-      - ./server-ts/node_modules:/app/node_modules
     ports:
       - 8080:8080
     depends_on:
