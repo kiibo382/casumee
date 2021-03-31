@@ -87,7 +87,7 @@ export default {
     sockets: [
       {
         name: 'home',
-        url: 'http://localhost:8080',
+        url: process.env.SOCKET_HOME_URL,
         default: true,
         vuex: {},
         namespaces: {}

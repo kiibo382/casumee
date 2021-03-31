@@ -1,10 +1,6 @@
 # build layer
 FROM node:14-slim as builder
 
-RUN adduser -D myuser && chown -R myuser /app
-
-USER myuser
-
 WORKDIR /app
 
 COPY . .
@@ -27,11 +23,11 @@ RUN rm -rf node_modules && \
 # run layer
 FROM node:lts-alpine
 
+WORKDIR /app
+
 RUN adduser -D myuser && chown -R myuser /app
 
 USER myuser
-
-WORKDIR /app
 
 COPY --from=builder /app  .
 
