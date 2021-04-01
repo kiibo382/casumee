@@ -21,4 +21,4 @@ run-local-server:
 
 .PHONY: cleanup-local
 cleanup-local:
-	docker-compose -f docker-compose.local.yml down
+	docker-compose -f docker-compose.local.yml down --volumes --remove-orphans

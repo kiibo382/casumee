@@ -50,15 +50,24 @@ export default {
       msg: '',
       chatDataList: [],
       socket: null,
+      userName: this.$route.params.userName,
       pastChatData: [],
     }
   },
-  async fetch({ $route, $auth, $axios }) {
-    const userArray = [$route.params.userName, $auth.user.userName].sort()
+  async fetch({ $auth, $axios }) {
+    const userArray = [this.userName, $auth.user.userName].sort()
     const chatName = `${userArray[0]}${userArray[1]}`
     this.pastChatData = await $axios
       .$get(`/chat/${chatName}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res) {
+          null
+        } else {
+          res.json()
+        }
+      })
+      console.log(this.pastChatData)
+      console.log(this.userName)
   },
   mounted() {
     this.socket = this.$nuxtSocket({

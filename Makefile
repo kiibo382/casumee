@@ -1,11 +1,11 @@
-.PHONY: build-docker
-build-docker-stg:
+.PHONY: build
+build:
 	docker-compose build 
 
-.PHONY: run-docker
-run-stg:
+.PHONY: run
+run:
 	docker-compose up -d
 
 .PHONY: cleanup
-cleanup-stg:
-	docker-compose down
+cleanup:
+	docker-compose down --volumes --remove-orphans

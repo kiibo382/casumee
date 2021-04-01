@@ -1,39 +1,27 @@
 # build layer(typescript)
-FROM node:14-slim as builder
+# FROM node:14-slim as builder
 
-RUN adduser -D myuser && chown -R myuser /app
+# WORKDIR /app
 
-USER myuser
+# COPY package.json package-lock.json ./
 
-WORKDIR /app
+# RUN npm ci
 
-COPY package.json package-lock.json ./
+# COPY . .
 
-RUN cpm ci
-
-COPY . .
-
-RUN npm run build
+# RUN npm run build
 
 # package install layer
 FROM node:14-slim as node_modules
 
-RUN adduser -D myuser && chown -R myuser /app
-
-USER myuser
-
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN cpm ci --only=production
+RUN npm ci --only=production
 
 # run layer
 FROM gcr.io/distroless/nodejs:14
-
-RUN adduser -D myuser && chown -R myuser /app
-
-USER myuser
 
 WORKDIR /app
 
@@ -42,7 +30,7 @@ ENV HOST 0.0.0.0
 
 EXPOSE 8080
 
-COPY --from=builder /app/dist /app/dist
+COPY ./dist /app/dist
 COPY --from=node_modules /app/node_modules /app/node_modules
 
 CMD ["dist/app.js"]
